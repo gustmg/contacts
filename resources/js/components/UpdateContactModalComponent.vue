@@ -60,7 +60,7 @@
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer">                    
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                     <button v-on:click="updateContact" type="button" class="btn btn-primary">Guardar</button>
                 </div>
@@ -73,6 +73,10 @@
 </style>
 <script>
     export default {
+        mounted() {
+            console.log('Update Contact Modal Component Mounted');
+        },
+
         props: {
             contactId: String,
             contactName: String,
@@ -80,10 +84,6 @@
             contactEmail: String,
             contactGender: String,
             contactAddress: String
-        },
-
-        mounted() {
-            console.log('Update Contact Modal Component Mounted');
         },
 
         data(){
@@ -137,7 +137,6 @@
             },
             
             updateContact: function(){
-                alert(this.updateContactName);
 	    		axios.put('http://localhost:8000/contacts/'+this.contactId,{
 	    			contact_name: this.updateContactName,
 	    			contact_phone: this.updateContactPhone,
