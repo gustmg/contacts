@@ -17,9 +17,10 @@ class CreateContactsTable extends Migration
             $table->bigIncrements('contact_id');
             $table->string('contact_name');
             $table->string('contact_phone');
-            $table->mediumText('contact_address');
             $table->string('contact_email');
+            $table->mediumText('contact_address')->nullable();
             $table->boolean('contact_gender');
+            $table->string('contact_profile_picture')->nullable();
             $table->timestamps();
             $table->unsignedBigInteger('user_id');
         });

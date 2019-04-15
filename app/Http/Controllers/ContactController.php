@@ -17,7 +17,8 @@ class ContactController extends Controller
      */
     public function index()
     {
-        //
+        $contacts=Contact::where('user_id', Auth::user()->id)->get();
+        return View::make('contacts.index', ['contacts'=>$contacts]);
     }
 
     /**
@@ -38,25 +39,28 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'contact_name' => 'required',
-            'contact_phone' => 'required',
-            'contact_email' => 'required',
-            'contact_gender' => 'required'
-        ]);
+        if($request->ajax()){
+            $validatedData = $request->validate([
+                'contact_name' => 'required',
+                'contact_phone' => 'required',
+                'contact_email' => 'required',
+                'contact_gender' => 'required'
+            ]);
 
-        $contact = new Contact();
-        $contact->contact_name = $request->contact_name;
-        $contact->contact_phone = $request->contact_phone;
-        $contact->contact_email = $request->contact_email;
-        $contact->contact_address = $request->contact_address;
-        $contact->contact_gender = $request->contact_gender;
-        $contact->user_id = Auth::user()->id;
+            $contact = new Contact();
+            $contact->contact_name = $request->contact_name;
+            $contact->contact_phone = $request->contact_phone;
+            $contact->contact_email = $request->contact_email;
+            $contact->contact_address = $request->contact_address;
+            $contact->contact_gender = $request->contact_gender;
+            $contact->user_id = Auth::user()->id;
+            $contact->save();
 
-        $contact->save();
-
-        $contacts = Contact::where('user_id', Auth::user()->id);
-        return view('home')->with('contacts', $contacts);
+            return response()->json([
+                "message" => "Contacto creado correctamente.",
+                "contact_id" => $contact->contact_id
+            ],200);
+        }
     }
 
     /**
