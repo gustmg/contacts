@@ -15,13 +15,16 @@
                     <tbody>
                         <tr v-for="(contact, index) in filteredContacts">
                             <th>#</th>
-                            <td>{{contact.contact_name}}</td>
+                            <td>
+                                <img src="img/profile_picture.png" width="32">&nbsp;&nbsp;&nbsp;&nbsp;
+                                <span class="align-middle">{{contact.contact_name}}</span>
+                            </td>
                             <td>{{contact.contact_email}}</td>
                             <td>{{contact.contact_phone}}</td>
                             <td>
-                                <a class="selectable"><i class="material-icons">person</i></a>
+                                <a class="selectable" v-on:click=""><i class="material-icons">person</i></a>
                                 <a class="selectable" v-on:click="updateContact(contact, index)" data-toggle="modal" data-target="#updateContactModal"><i class="material-icons">edit</i></a>
-                                <a class="selectable" data-toggle="modal" data-target="#deleteContactModal"><i class="material-icons">delete</i></a>
+                                <a class="selectable" v-on:click="setDeleteContactId(contact.contact_id)" data-toggle="modal" data-target="#deleteContactModal"><i class="material-icons">delete</i></a>
                             </td>
                         </tr>
                     </tbody>
@@ -72,7 +75,13 @@
                 this.contactAddress = contact.contact_address;
 
                 $('#updateContactModal').find('#updateContactGender').val(contact.contact_gender);
+            },
+
+            setDeleteContactId: function(contact_id) {
+                this.contactId = contact_id;
             }
+
+
         },
 
         computed: {

@@ -30,19 +30,19 @@
                                 <div class="col-md-12">
                                     <div class="form-group text-left">
                                         <label for="contactName">Nombre *</label>
-                                        <input v-model="newContactName" name="contact_name" type="text" class="form-control" id="contactName" placeholder="Ingresar nombre...">
+                                        <input v-model="newContactName" name="contact_name" type="text" class="form-control" id="contactName" placeholder="Ingresar nombre..." required>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group text-left">
                                         <label for="contactMail">E-mail *</label>
-                                        <input v-model="newContactEmail" name="contact_email" type="email" class="form-control" id="contactEmail" placeholder="Ingresar e-mail...">
+                                        <input v-model="newContactEmail" name="contact_email" type="email" class="form-control" id="contactEmail" placeholder="Ingresar e-mail..." required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group text-left">
                                         <label for="contactPhone">Teléfono *</label>
-                                        <input v-model="newContactPhone" name="contact_phone" type="tel" class="form-control" id="contactPhone" placeholder="Ingresar teléfono...">
+                                        <input v-model="newContactPhone" name="contact_phone" type="tel" class="form-control" id="contactPhone" placeholder="Ingresar teléfono..." required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">

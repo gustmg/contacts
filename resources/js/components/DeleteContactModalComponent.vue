@@ -13,7 +13,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary">Aceptar</button>
+                <button v-on:click="deleteContact" type="button" class="btn btn-primary">Aceptar</button>
             </div>
             </div>
         </div>
@@ -31,6 +31,25 @@
         props: {
             contactId: String
         },
+
+        data() {
+            return {
+                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            }
+        },
+
+        methods: {
+            deleteContact: function() {
+                console.log(this.contactId);
+                axios.delete('http://localhost:8000/contacts/'+this.contactId, {contact_id: this.contactId})
+                .then(function(res){
+	    			console.log(res);
+	    		})
+	    		.catch(function(err){
+	    			console.log(err.response);
+	    		});
+            }
+        }
     }
 </script>
 

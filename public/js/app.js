@@ -1854,6 +1854,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     console.log('Contacts list component mounted!');
@@ -1882,6 +1885,9 @@ __webpack_require__.r(__webpack_exports__);
       this.contactEmail = contact.contact_email;
       this.contactAddress = contact.contact_address;
       $('#updateContactModal').find('#updateContactGender').val(contact.contact_gender);
+    },
+    setDeleteContactId: function setDeleteContactId(contact_id) {
+      this.contactId = contact_id;
     }
   },
   computed: {
@@ -1937,6 +1943,23 @@ __webpack_require__.r(__webpack_exports__);
   },
   props: {
     contactId: String
+  },
+  data: function data() {
+    return {
+      csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    };
+  },
+  methods: {
+    deleteContact: function deleteContact() {
+      console.log(this.contactId);
+      axios["delete"]('http://localhost:8000/contacts/' + this.contactId, {
+        contact_id: this.contactId
+      }).then(function (res) {
+        console.log(res);
+      })["catch"](function (err) {
+        console.log(err.response);
+      });
+    }
   }
 });
 
@@ -38368,14 +38391,33 @@ var render = function() {
                   return _c("tr", [
                     _c("th", [_vm._v("#")]),
                     _vm._v(" "),
-                    _c("td", [_vm._v(_vm._s(contact.contact_name))]),
+                    _c("td", [
+                      _c("img", {
+                        attrs: { src: "img/profile_picture.png", width: "32" }
+                      }),
+                      _vm._v("    \n                            "),
+                      _c("span", { staticClass: "align-middle" }, [
+                        _vm._v(_vm._s(contact.contact_name))
+                      ])
+                    ]),
                     _vm._v(" "),
                     _c("td", [_vm._v(_vm._s(contact.contact_email))]),
                     _vm._v(" "),
                     _c("td", [_vm._v(_vm._s(contact.contact_phone))]),
                     _vm._v(" "),
                     _c("td", [
-                      _vm._m(1, true),
+                      _c(
+                        "a",
+                        {
+                          staticClass: "selectable",
+                          on: { click: function($event) {} }
+                        },
+                        [
+                          _c("i", { staticClass: "material-icons" }, [
+                            _vm._v("person")
+                          ])
+                        ]
+                      ),
                       _vm._v(" "),
                       _c(
                         "a",
@@ -38398,7 +38440,26 @@ var render = function() {
                         ]
                       ),
                       _vm._v(" "),
-                      _vm._m(2, true)
+                      _c(
+                        "a",
+                        {
+                          staticClass: "selectable",
+                          attrs: {
+                            "data-toggle": "modal",
+                            "data-target": "#deleteContactModal"
+                          },
+                          on: {
+                            click: function($event) {
+                              return _vm.setDeleteContactId(contact.contact_id)
+                            }
+                          }
+                        },
+                        [
+                          _c("i", { staticClass: "material-icons" }, [
+                            _vm._v("delete")
+                          ])
+                        ]
+                      )
                     ])
                   ])
                 }),
@@ -38481,27 +38542,6 @@ var staticRenderFns = [
         _c("th", [_vm._v("Opciones")])
       ])
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("a", { staticClass: "selectable" }, [
-      _c("i", { staticClass: "material-icons" }, [_vm._v("person")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "a",
-      {
-        staticClass: "selectable",
-        attrs: { "data-toggle": "modal", "data-target": "#deleteContactModal" }
-      },
-      [_c("i", { staticClass: "material-icons" }, [_vm._v("delete")])]
-    )
   }
 ]
 render._withStripped = true
@@ -38525,88 +38565,85 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: {
+        id: "deleteContactModal",
+        tabindex: "-1",
+        role: "dialog",
+        "aria-labelledby": "exampleModalLabel",
+        "aria-hidden": "true"
+      }
+    },
+    [
+      _c("div", { staticClass: "modal-dialog", attrs: { role: "document" } }, [
+        _c("div", { staticClass: "modal-content" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _vm._m(1),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-footer" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-secondary",
+                attrs: { type: "button", "data-dismiss": "modal" }
+              },
+              [_vm._v("Cerrar")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                on: { click: _vm.deleteContact }
+              },
+              [_vm._v("Aceptar")]
+            )
+          ])
+        ])
+      ])
+    ]
+  )
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "modal fade",
-        attrs: {
-          id: "deleteContactModal",
-          tabindex: "-1",
-          role: "dialog",
-          "aria-labelledby": "exampleModalLabel",
-          "aria-hidden": "true"
-        }
-      },
-      [
-        _c(
-          "div",
-          { staticClass: "modal-dialog", attrs: { role: "document" } },
-          [
-            _c("div", { staticClass: "modal-content" }, [
-              _c("div", { staticClass: "modal-header" }, [
-                _c(
-                  "h5",
-                  {
-                    staticClass: "modal-title",
-                    attrs: { id: "exampleModalLabel" }
-                  },
-                  [_vm._v("¿Eliminar contacto?")]
-                ),
-                _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass: "close",
-                    attrs: {
-                      type: "button",
-                      "data-dismiss": "modal",
-                      "aria-label": "Close"
-                    }
-                  },
-                  [
-                    _c("span", { attrs: { "aria-hidden": "true" } }, [
-                      _vm._v("×")
-                    ])
-                  ]
-                )
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "modal-body" }, [
-                _c("p", [
-                  _vm._v(
-                    "La información de este contacto se perderá al eliminar."
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "modal-footer" }, [
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-secondary",
-                    attrs: { type: "button", "data-dismiss": "modal" }
-                  },
-                  [_vm._v("Cerrar")]
-                ),
-                _vm._v(" "),
-                _c(
-                  "button",
-                  { staticClass: "btn btn-primary", attrs: { type: "button" } },
-                  [_vm._v("Aceptar")]
-                )
-              ])
-            ])
-          ]
-        )
-      ]
-    )
+    return _c("div", { staticClass: "modal-header" }, [
+      _c(
+        "h5",
+        { staticClass: "modal-title", attrs: { id: "exampleModalLabel" } },
+        [_vm._v("¿Eliminar contacto?")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-body" }, [
+      _c("p", [
+        _vm._v("La información de este contacto se perderá al eliminar.")
+      ])
+    ])
   }
 ]
 render._withStripped = true
@@ -38732,7 +38769,8 @@ var render = function() {
                                   name: "contact_name",
                                   type: "text",
                                   id: "contactName",
-                                  placeholder: "Ingresar nombre..."
+                                  placeholder: "Ingresar nombre...",
+                                  required: ""
                                 },
                                 domProps: { value: _vm.newContactName },
                                 on: {
@@ -38767,7 +38805,8 @@ var render = function() {
                                   name: "contact_email",
                                   type: "email",
                                   id: "contactEmail",
-                                  placeholder: "Ingresar e-mail..."
+                                  placeholder: "Ingresar e-mail...",
+                                  required: ""
                                 },
                                 domProps: { value: _vm.newContactEmail },
                                 on: {
@@ -38802,7 +38841,8 @@ var render = function() {
                                   name: "contact_phone",
                                   type: "tel",
                                   id: "contactPhone",
-                                  placeholder: "Ingresar teléfono..."
+                                  placeholder: "Ingresar teléfono...",
+                                  required: ""
                                 },
                                 domProps: { value: _vm.newContactPhone },
                                 on: {
