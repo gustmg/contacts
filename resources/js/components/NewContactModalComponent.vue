@@ -19,10 +19,10 @@
                                 <div class="col-md-12">
                                     <div class="row">
                                         <div class="col-md-6 text-center">
-                                            <img src="" width="80"><br>
+                                            <img id="preview_contact_profile_picture" src="img/profile_picture.png" width="80" height="80"><br>
                                         </div>
                                         <div class="col-md-6 text-center">
-                                            <input type="file" name="file" id="file" class="upload" />
+                                            <input type="file" name="contact_profile_picture" id="file" ref="file" v-on:change="onChangeFileUpload"/>
                                             <label for="file">Choose a file</label>
                                         </div>
                                     </div><br>
@@ -118,7 +118,8 @@
                 newContactEmail:null,
                 newContactPhone:null,
                 newContactGender:0,
-                newContactAddress:null
+                newContactAddress:null,
+                file:''
             }
         },
 
@@ -133,21 +134,42 @@
                     contact_address: this.newContactAddress
                 };
 
-                axios.post('http://localhost:8000/contacts',{
-                    contact_name: this.newContactName,
-                    contact_email: this.newContactEmail,
-                    contact_phone: this.newContactPhone,
-                    contact_gender: this.newContactGender,
-                    contact_address: this.newContactAddress
+                let formData = new FormData();
+                formData.append('contact_profile_picture', this.file);
+                formData.append('someName','someValue');                
+
+                axios.post('http://localhost:8000/contacts',
+                    // contact_name: this.newContactName,
+                    // contact_email: this.newContactEmail,
+                    // contact_phone: this.newContactPhone,
+                    // contact_gender: this.newContactGender,
+                    // contact_address: this.newContactAddress
+                    formData
+                )
+                // .then((res)=>{newContact.contact_id = res.data.contact_id})
+                .then((res)=>{
+                    console.log(res);
                 })
-                .then((res)=>{newContact.contact_id = res.data.contact_id})
                 .catch(function(err){
                     console.log(err);
                 });
 
-                this.$parent.contacts.push(newContact);
-                this.$parent.forceRerender();
-                $('#newContactModal').modal('hide');
+                // this.$parent.contacts.push(newContact);
+                // this.$parent.forceRerender();
+                // $('#newContactModal').modal('hide');
+            },
+
+            onChangeFileUpload(){
+                this.file = this.$refs.file.files[0];
+                if(this.file){
+                    var reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        $('#preview_contact_profile_picture').attr('src', e.target.result);
+                    }
+
+                    reader. readAsDataURL(this.file);
+                }
             }
         }
     }

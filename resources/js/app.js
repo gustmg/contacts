@@ -25,6 +25,7 @@ Vue.component('contacts-component', require('./components/ContactsComponent.vue'
 Vue.component('contacts-list-component', require('./components/ContactsListComponent.vue').default);
 Vue.component('new-contact-modal-component', require('./components/NewContactModalComponent.vue').default);
 Vue.component('update-contact-modal-component', require('./components/UpdateContactModalComponent.vue').default);
+Vue.component('show-contact-modal-component', require('./components/ShowContactModalComponent.vue').default);
 Vue.component('delete-contact-modal-component', require('./components/DeleteContactModalComponent.vue').default);
 
 /**

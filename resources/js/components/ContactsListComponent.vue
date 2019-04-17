@@ -22,7 +22,7 @@
                             <td>{{contact.contact_email}}</td>
                             <td>{{contact.contact_phone}}</td>
                             <td>
-                                <a class="selectable" v-on:click=""><i class="material-icons">person</i></a>
+                                <a class="selectable" v-on:click="showContact(contact)" data-toggle="modal" data-target="#showContactModal"><i class="material-icons">person</i></a>
                                 <a class="selectable" v-on:click="updateContact(contact, index)" data-toggle="modal" data-target="#updateContactModal"><i class="material-icons">edit</i></a>
                                 <a class="selectable" v-on:click="setDeleteContactId(contact.contact_id)" data-toggle="modal" data-target="#deleteContactModal"><i class="material-icons">delete</i></a>
                             </td>
@@ -32,6 +32,7 @@
             </div>
             <h2 v-show="filteredContacts.length == 0 && this.$parent.searchContact != '' " class="text-center">Búsqueda sin resultados :(</h2>
             <h2 v-show="contacts.length == 0 && this.$parent.searchContact == ''" class="text-center">No hay contactos registrados :(</h2>
+            <show-contact-modal-component :contact-name="contactName" :contact-phone="contactPhone" :contact-email="contactEmail" :contact-address="contactAddress"></show-contact-modal-component>
             <update-contact-modal-component :contact-id="contactId.toString()" :contact-name="contactName" :contact-phone="contactPhone" :contact-email="contactEmail" :contact-address="contactAddress"></update-contact-modal-component>
             <delete-contact-modal-component :contact-id="contactId.toString()"></delete-contact-modal-component>
         </div>
@@ -79,6 +80,13 @@
 
             setDeleteContactId: function(contact_id) {
                 this.contactId = contact_id;
+            },
+
+            showContact: function(contact) {
+                this.contactName = contact.contact_name;
+                this.contactPhone = contact.contact_phone;
+                this.contactEmail = contact.contact_email;
+                this.contactAddress = contact.contact_address;
             }
 
 

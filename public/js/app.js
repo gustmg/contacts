@@ -1857,6 +1857,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     console.log('Contacts list component mounted!');
@@ -1888,6 +1889,12 @@ __webpack_require__.r(__webpack_exports__);
     },
     setDeleteContactId: function setDeleteContactId(contact_id) {
       this.contactId = contact_id;
+    },
+    showContact: function showContact(contact) {
+      this.contactName = contact.contact_name;
+      this.contactPhone = contact.contact_phone;
+      this.contactEmail = contact.contact_email;
+      this.contactAddress = contact.contact_address;
     }
   },
   computed: {
@@ -2125,7 +2132,8 @@ __webpack_require__.r(__webpack_exports__);
       newContactEmail: null,
       newContactPhone: null,
       newContactGender: 0,
-      newContactAddress: null
+      newContactAddress: null,
+      file: ''
     };
   },
   methods: {
@@ -2138,21 +2146,83 @@ __webpack_require__.r(__webpack_exports__);
         contact_gender: this.newContactGender,
         contact_address: this.newContactAddress
       };
-      axios.post('http://localhost:8000/contacts', {
-        contact_name: this.newContactName,
-        contact_email: this.newContactEmail,
-        contact_phone: this.newContactPhone,
-        contact_gender: this.newContactGender,
-        contact_address: this.newContactAddress
-      }).then(function (res) {
-        newContact.contact_id = res.data.contact_id;
+      var formData = new FormData();
+      formData.append('contact_profile_picture', this.file);
+      formData.append('someName', 'someValue');
+      axios.post('http://localhost:8000/contacts', // contact_name: this.newContactName,
+      // contact_email: this.newContactEmail,
+      // contact_phone: this.newContactPhone,
+      // contact_gender: this.newContactGender,
+      // contact_address: this.newContactAddress
+      formData) // .then((res)=>{newContact.contact_id = res.data.contact_id})
+      .then(function (res) {
+        console.log(res);
       })["catch"](function (err) {
         console.log(err);
-      });
-      this.$parent.contacts.push(newContact);
-      this.$parent.forceRerender();
-      $('#newContactModal').modal('hide');
+      }); // this.$parent.contacts.push(newContact);
+      // this.$parent.forceRerender();
+      // $('#newContactModal').modal('hide');
+    },
+    onChangeFileUpload: function onChangeFileUpload() {
+      this.file = this.$refs.file.files[0];
+
+      if (this.file) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+          $('#preview_contact_profile_picture').attr('src', e.target.result);
+        };
+
+        reader.readAsDataURL(this.file);
+      }
     }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ShowContactModalComponent.vue?vue&type=script&lang=js&":
+/*!************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ShowContactModalComponent.vue?vue&type=script&lang=js& ***!
+  \************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  mounted: function mounted() {
+    console.log('Show contact modal component mounted!');
+  },
+  props: {
+    contactName: String,
+    contactEmail: String,
+    contactPhone: String,
+    // contactGender: String,
+    contactAddress: String
   }
 });
 
@@ -38410,7 +38480,15 @@ var render = function() {
                         "a",
                         {
                           staticClass: "selectable",
-                          on: { click: function($event) {} }
+                          attrs: {
+                            "data-toggle": "modal",
+                            "data-target": "#showContactModal"
+                          },
+                          on: {
+                            click: function($event) {
+                              return _vm.showContact(contact)
+                            }
+                          }
                         },
                         [
                           _c("i", { staticClass: "material-icons" }, [
@@ -38505,6 +38583,15 @@ var render = function() {
           },
           [_vm._v("No hay contactos registrados :(")]
         ),
+        _vm._v(" "),
+        _c("show-contact-modal-component", {
+          attrs: {
+            "contact-name": _vm.contactName,
+            "contact-phone": _vm.contactPhone,
+            "contact-email": _vm.contactEmail,
+            "contact-address": _vm.contactAddress
+          }
+        }),
         _vm._v(" "),
         _c("update-contact-modal-component", {
           attrs: {
@@ -38747,7 +38834,32 @@ var render = function() {
                     [
                       _c("div", { staticClass: "container-fluid" }, [
                         _c("div", { staticClass: "row" }, [
-                          _vm._m(2),
+                          _c("div", { staticClass: "col-md-12" }, [
+                            _c("div", { staticClass: "row" }, [
+                              _vm._m(2),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                { staticClass: "col-md-6 text-center" },
+                                [
+                                  _c("input", {
+                                    ref: "file",
+                                    attrs: {
+                                      type: "file",
+                                      name: "contact_profile_picture",
+                                      id: "file"
+                                    },
+                                    on: { change: _vm.onChangeFileUpload }
+                                  }),
+                                  _vm._v(" "),
+                                  _c("label", { attrs: { for: "file" } }, [
+                                    _vm._v("Choose a file")
+                                  ])
+                                ]
+                              )
+                            ]),
+                            _c("br")
+                          ]),
                           _vm._v(" "),
                           _c("div", { staticClass: "col-md-12" }, [
                             _c("div", { staticClass: "form-group text-left" }, [
@@ -39028,23 +39140,108 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-12" }, [
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-md-6 text-center" }, [
-          _c("img", { attrs: { src: "", width: "80" } }),
-          _c("br")
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-6 text-center" }, [
-          _c("input", {
-            staticClass: "upload",
-            attrs: { type: "file", name: "file", id: "file" }
-          }),
-          _vm._v(" "),
-          _c("label", { attrs: { for: "file" } }, [_vm._v("Choose a file")])
-        ])
-      ]),
+    return _c("div", { staticClass: "col-md-6 text-center" }, [
+      _c("img", {
+        attrs: {
+          id: "preview_contact_profile_picture",
+          src: "img/profile_picture.png",
+          width: "80",
+          height: "80"
+        }
+      }),
       _c("br")
+    ])
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ShowContactModalComponent.vue?vue&type=template&id=03fc00b8&":
+/*!****************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ShowContactModalComponent.vue?vue&type=template&id=03fc00b8& ***!
+  \****************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: {
+        id: "showContactModal",
+        tabindex: "-1",
+        role: "dialog",
+        "aria-labelledby": "exampleModalLabel",
+        "aria-hidden": "true"
+      }
+    },
+    [
+      _c("div", { staticClass: "modal-dialog", attrs: { role: "document" } }, [
+        _c("div", { staticClass: "modal-content" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-body" }, [
+            _vm._v(
+              "\n                " + _vm._s(_vm.contactName) + "\n            "
+            )
+          ]),
+          _vm._v(" "),
+          _vm._m(1)
+        ])
+      ])
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c(
+        "h5",
+        { staticClass: "modal-title", attrs: { id: "exampleModalLabel" } },
+        [_vm._v("Contacto")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-footer" }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-secondary",
+          attrs: { type: "button", "data-dismiss": "modal" }
+        },
+        [_vm._v("Cerrar")]
+      )
     ])
   }
 ]
@@ -51534,6 +51731,7 @@ Vue.component('contacts-component', __webpack_require__(/*! ./components/Contact
 Vue.component('contacts-list-component', __webpack_require__(/*! ./components/ContactsListComponent.vue */ "./resources/js/components/ContactsListComponent.vue")["default"]);
 Vue.component('new-contact-modal-component', __webpack_require__(/*! ./components/NewContactModalComponent.vue */ "./resources/js/components/NewContactModalComponent.vue")["default"]);
 Vue.component('update-contact-modal-component', __webpack_require__(/*! ./components/UpdateContactModalComponent.vue */ "./resources/js/components/UpdateContactModalComponent.vue")["default"]);
+Vue.component('show-contact-modal-component', __webpack_require__(/*! ./components/ShowContactModalComponent.vue */ "./resources/js/components/ShowContactModalComponent.vue")["default"]);
 Vue.component('delete-contact-modal-component', __webpack_require__(/*! ./components/DeleteContactModalComponent.vue */ "./resources/js/components/DeleteContactModalComponent.vue")["default"]);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -51981,6 +52179,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_NewContactModalComponent_vue_vue_type_template_id_6f84febb___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_NewContactModalComponent_vue_vue_type_template_id_6f84febb___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/ShowContactModalComponent.vue":
+/*!***************************************************************!*\
+  !*** ./resources/js/components/ShowContactModalComponent.vue ***!
+  \***************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _ShowContactModalComponent_vue_vue_type_template_id_03fc00b8___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ShowContactModalComponent.vue?vue&type=template&id=03fc00b8& */ "./resources/js/components/ShowContactModalComponent.vue?vue&type=template&id=03fc00b8&");
+/* harmony import */ var _ShowContactModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ShowContactModalComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/ShowContactModalComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _ShowContactModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _ShowContactModalComponent_vue_vue_type_template_id_03fc00b8___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _ShowContactModalComponent_vue_vue_type_template_id_03fc00b8___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/ShowContactModalComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/ShowContactModalComponent.vue?vue&type=script&lang=js&":
+/*!****************************************************************************************!*\
+  !*** ./resources/js/components/ShowContactModalComponent.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ShowContactModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./ShowContactModalComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ShowContactModalComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ShowContactModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/ShowContactModalComponent.vue?vue&type=template&id=03fc00b8&":
+/*!**********************************************************************************************!*\
+  !*** ./resources/js/components/ShowContactModalComponent.vue?vue&type=template&id=03fc00b8& ***!
+  \**********************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ShowContactModalComponent_vue_vue_type_template_id_03fc00b8___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./ShowContactModalComponent.vue?vue&type=template&id=03fc00b8& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ShowContactModalComponent.vue?vue&type=template&id=03fc00b8&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ShowContactModalComponent_vue_vue_type_template_id_03fc00b8___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ShowContactModalComponent_vue_vue_type_template_id_03fc00b8___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

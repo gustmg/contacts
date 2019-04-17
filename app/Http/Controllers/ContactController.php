@@ -40,26 +40,28 @@ class ContactController extends Controller
     public function store(Request $request)
     {
         if($request->ajax()){
-            $validatedData = $request->validate([
-                'contact_name' => 'required',
-                'contact_phone' => 'required',
-                'contact_email' => 'required',
-                'contact_gender' => 'required'
-            ]);
+            // $validatedData = $request->validate([
+            //     'contact_name' => 'required',
+            //     'contact_phone' => 'required',
+            //     'contact_email' => 'required',
+            //     'contact_gender' => 'required'
+            // ]);
 
-            $contact = new Contact();
-            $contact->contact_name = $request->contact_name;
-            $contact->contact_phone = $request->contact_phone;
-            $contact->contact_email = $request->contact_email;
-            $contact->contact_address = $request->contact_address;
-            $contact->contact_gender = $request->contact_gender;
-            $contact->user_id = Auth::user()->id;
-            $contact->save();
+            // $contact = new Contact();
+            // $contact->contact_name = $request->contact_name;
+            // $contact->contact_phone = $request->contact_phone;
+            // $contact->contact_email = $request->contact_email;
+            // $contact->contact_address = $request->contact_address;
+            // $contact->contact_gender = $request->contact_gender;
+            // $contact->user_id = Auth::user()->id;
+            // $contact->save();
 
-            return response()->json([
-                "message" => "Contacto creado correctamente.",
-                "contact_id" => $contact->contact_id
-            ],200);
+            return $request->contact_profile_picture->store('images');
+
+            // return response()->json([
+            //     "message" => "Contacto creado correctamente.",
+            //     // "contact_id" => $contact->contact_id
+            // ],200);
         }
     }
 
