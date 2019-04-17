@@ -1895,6 +1895,13 @@ __webpack_require__.r(__webpack_exports__);
       this.contactPhone = contact.contact_phone;
       this.contactEmail = contact.contact_email;
       this.contactAddress = contact.contact_address;
+    },
+    getImageUrl: function getImageUrl(contact_id, contact_profile_picture) {
+      if (contact_profile_picture) {
+        return "storage/contacts/" + contact_id + ".jpg";
+      } else {
+        return "img/profile_picture.png";
+      }
     }
   },
   computed: {
@@ -2148,20 +2155,19 @@ __webpack_require__.r(__webpack_exports__);
       };
       var formData = new FormData();
       formData.append('contact_profile_picture', this.file);
-      formData.append('someName', 'someValue');
-      axios.post('http://localhost:8000/contacts', // contact_name: this.newContactName,
-      // contact_email: this.newContactEmail,
-      // contact_phone: this.newContactPhone,
-      // contact_gender: this.newContactGender,
-      // contact_address: this.newContactAddress
-      formData) // .then((res)=>{newContact.contact_id = res.data.contact_id})
-      .then(function (res) {
-        console.log(res);
+      formData.append('contact_name', this.newContactName);
+      formData.append('contact_email', this.newContactEmail);
+      formData.append('contact_phone', this.newContactPhone);
+      formData.append('contact_gender', this.newContactGender);
+      formData.append('contact_address', this.newContactAddress);
+      axios.post('http://localhost:8000/contacts', formData).then(function (res) {
+        newContact.contact_id = res.data.contact_id;
       })["catch"](function (err) {
         console.log(err);
-      }); // this.$parent.contacts.push(newContact);
-      // this.$parent.forceRerender();
-      // $('#newContactModal').modal('hide');
+      });
+      this.$parent.contacts.push(newContact);
+      this.$parent.forceRerender();
+      $('#newContactModal').modal('hide');
     },
     onChangeFileUpload: function onChangeFileUpload() {
       this.file = this.$refs.file.files[0];
@@ -38463,7 +38469,13 @@ var render = function() {
                     _vm._v(" "),
                     _c("td", [
                       _c("img", {
-                        attrs: { src: "img/profile_picture.png", width: "32" }
+                        attrs: {
+                          src: _vm.getImageUrl(
+                            contact.contact_id,
+                            contact.contact_profile_picture
+                          ),
+                          width: "32"
+                        }
                       }),
                       _vm._v("    \n                            "),
                       _c("span", { staticClass: "align-middle" }, [

@@ -20,7 +20,7 @@ class CreateContactsTable extends Migration
             $table->string('contact_email');
             $table->mediumText('contact_address')->nullable();
             $table->boolean('contact_gender');
-            $table->string('contact_profile_picture')->nullable();
+            $table->boolean('contact_profile_picture')->default(0);
             $table->timestamps();
             $table->unsignedBigInteger('user_id');
         });

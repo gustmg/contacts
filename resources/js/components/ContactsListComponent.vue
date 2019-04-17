@@ -16,7 +16,7 @@
                         <tr v-for="(contact, index) in filteredContacts">
                             <th>#</th>
                             <td>
-                                <img src="img/profile_picture.png" width="32">&nbsp;&nbsp;&nbsp;&nbsp;
+                                <img :src="getImageUrl(contact.contact_id, contact.contact_profile_picture)" width="32">&nbsp;&nbsp;&nbsp;&nbsp;
                                 <span class="align-middle">{{contact.contact_name}}</span>
                             </td>
                             <td>{{contact.contact_email}}</td>
@@ -87,6 +87,15 @@
                 this.contactPhone = contact.contact_phone;
                 this.contactEmail = contact.contact_email;
                 this.contactAddress = contact.contact_address;
+            },
+
+            getImageUrl: function(contact_id, contact_profile_picture) {
+                if(contact_profile_picture){
+                    return "storage/contacts/"+contact_id+".jpg";
+                }
+                else{
+                    return "img/profile_picture.png";
+                }
             }
 
 
