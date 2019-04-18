@@ -1,11 +1,17 @@
 <template>
     <div class="row justify-content-center">
         <div class="col-md-12">
+            
             <div class="card table-responsive" v-show="contacts.length > 0">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col">#</th>
+                            <th scope="col">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="checkAll" v-on:click="checkAll">
+                                    <label class="custom-control-label" for="checkAll"></label>
+                                </div>
+                            </th>
                             <th scope="col">Nombre</th>
                             <th scope="col">E-mail</th>
                             <th scope="col">Teléfono</th>
@@ -13,8 +19,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(contact, index) in filteredContacts" v-bind:index="index">
-                            <th>#</th>
+                        <tr v-for="(contact, index) in filteredContacts" v-bind:index="index" >
+                            <th>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check" v-bind:id="index" v-on:change="countCheckedInputs(contact.contact_id)">
+                                    <label class="custom-control-label" v-bind:for="index"></label>
+                                </div>
+                            </th>
                             <td>
                                 <img :src="getImageUrl(contact.contact_id, contact.contact_profile_picture)" width="32" height="32">&nbsp;&nbsp;&nbsp;&nbsp;
                                 <span class="align-middle">{{contact.contact_name}}</span>
@@ -33,8 +44,13 @@
             <h2 v-show="filteredContacts.length == 0 && this.$parent.searchContact != '' " class="text-center">Búsqueda sin resultados :(</h2>
             <h2 v-show="contacts.length == 0 && this.$parent.searchContact == ''" class="text-center">No hay contactos registrados :(</h2>
             <show-contact-modal-component :contact-id="contactId" :contact-name="contactName" :contact-phone="contactPhone" :contact-email="contactEmail" :contact-address="contactAddress" :contact-gender="contactGender" :contact-profile-picture="contactProfilePicture"></show-contact-modal-component>
-            <update-contact-modal-component :contact-id="contactId.toString()" :contact-name="contactName" :contact-phone="contactPhone" :contact-email="contactEmail" :contact-address="contactAddress"></update-contact-modal-component>
+            <update-contact-modal-component :contact-index="contactIndex" :contact-id="contactId" :contact-name="contactName" :contact-phone="contactPhone" :contact-email="contactEmail" :contact-address="contactAddress" :contact-gender="contactGender" :contact-profile-picture="contactProfilePicture"></update-contact-modal-component>
             <delete-contact-modal-component :contact-id="contactId.toString()" :contact-index="contactIndex"></delete-contact-modal-component>
+            <delete-contacts-modal-component :contacts-to-delete="contactsToDelete"></delete-contacts-modal-component>
+        </div>
+        <div v-if="totalCheckedInputs > 0" class="col-md-12" align="center"><br>
+            <button type="button" class="btn btn-secondary">Exportar contactos seleccionados</button>
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteContactsModal">Eiminar contactos seleccionados</button>
         </div>
     </div>
 </template>
@@ -64,19 +80,24 @@
                 contactEmail: '',
                 contactAddress: '',
                 contactGender: 0,
-                contactProfilePicture: 0
+                contactProfilePicture: 0,
+                totalCheckedInputs: 0,
+                contactsToDelete: []
             }
         },
 
         methods: {
             updateContact: function(contact, index) {
+                this.contactIndex= index;
                 this.contactId = contact.contact_id;
                 this.contactName = contact.contact_name;
                 this.contactPhone = contact.contact_phone;
                 this.contactEmail = contact.contact_email;
                 this.contactAddress = contact.contact_address;
+                this.contactGender = contact.contact_gender;
+                this.contactProfilePicture = contact.contact_profile_picture;
 
-                $('#updateContactModal').find('#updateContactGender').val(contact.contact_gender);
+                // $('#updateContactModal').find('#updateContactGender').val(contact.contact_gender);
             },
 
             setDeleteContactId: function(contact_id, index) {
@@ -101,9 +122,36 @@
                 else{
                     return "img/profile_picture.png";
                 }
+            },
+
+            checkAll: function() {
+                $(".check").prop('checked', $('#checkAll').prop('checked'));
+                //Llena o vacía el array de id de contactos a eliminar dependiendo de si el checbox este activado o no.
+                this.contactsToDelete=[];
+                var idArray=[];
+                if($('#checkAll').is(':checked')){
+                    this.contacts.forEach(function(contact){
+                        idArray.push(contact.contact_id);
+                    })
+                }
+                this.contactsToDelete=idArray;
+                this.totalCheckedInputs = $('.check:checked').length;
+            },
+
+            addContactIdToArray: function(contact_id) {
+                this.contactsToDelete.push(contact_id);
+            },
+
+            countCheckedInputs: function(contact_id) {
+                if(this.contactsToDelete.includes(contact_id)){
+                    var index_to_delete = this.contactsToDelete.indexOf(contact_id);
+                    this.contactsToDelete.splice(index_to_delete, 1);
+                }
+                else{
+                    this.contactsToDelete.push(contact_id);
+                }                
+                this.totalCheckedInputs = $('.check:checked').length;
             }
-
-
         },
 
         computed: {

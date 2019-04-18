@@ -1,6 +1,10 @@
 <template>
     <div class="container">
-        <div class="row justify-content-center">
+        <div class="row">
+            <div class="col-md-6">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newContactModal">Agregar contacto</button>
+                <button type="button" class="btn btn-success">Exportar agenda</button>
+            </div>
             <div class="col-md-6">
                 <form>
                     <div class="form-group">
@@ -9,8 +13,7 @@
                 </form>
             </div>
         </div>
-        <contacts-list-component :contacts="contacts" :key="componentKey"></contacts-list-component>
-        <br>
+        <contacts-list-component :contacts="contacts" :key="componentKey"></contacts-list-component><br>
         <new-contact-modal-component></new-contact-modal-component>
     </div>
 </template>

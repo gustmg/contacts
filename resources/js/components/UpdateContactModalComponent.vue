@@ -14,12 +14,17 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="row">
-                                        <div class="col-md-6 text-center">
-                                            <img src="" width="80"><br>
+                                        <div class="col-md-12 text-center">
+                                            <img id="update_preview_contact_profile_picture" :src="getImageUrl(contactId, contactProfilePicture)" width="180" height="180"><br>
+                                            <button v-if="contactProfilePicture" v-on:click="removeProfilePicture" type="button" class="close remove-image" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
                                         </div>
-                                        <div class="col-md-6 text-center">
-                                            <input type="file" name="file" id="file" class="upload" />
-                                            <label for="file">Choose a file</label>
+                                        <div class="col-md-12"><br>
+                                            <div class="custom-file">
+                                                <input type="file" name="contact_profile_picture" id="updateContactProfilePicture" class="custom-file-input" ref="file" v-on:change="onChangeFileUpload"/>
+                                                <label class="custom-file-label" for="updateContactProfilePicture">Choose file</label>
+                                            </div>
                                         </div>
                                     </div><br>
                                 </div>
@@ -69,8 +74,11 @@
     </div>
 </template>
 <style>
-    
+    .remove-image{
+        float: none !important;
+    }
 </style>
+
 <script>
     export default {
         mounted() {
@@ -78,12 +86,14 @@
         },
 
         props: {
-            contactId: String,
+            contactIndex: Number,
+            contactId: Number,
             contactName: String,
             contactPhone: String,
             contactEmail: String,
-            contactGender: String,
-            contactAddress: String
+            contactGender: Number,
+            contactAddress: String,
+            contactProfilePicture: Number
         },
 
         data(){
@@ -92,8 +102,9 @@
                 updateContactName:'',
                 updateContactPhone:'',
                 updateContactEmail:'',
-                updateContactGender:'',
+                updateContactGender:0,
                 updateContactAddress:'',
+                updateContactProfilePicture:0
             }
         },
 
@@ -137,25 +148,60 @@
             },
             
             updateContact: function(){
-	    		axios.put('http://localhost:8000/contacts/'+this.contactId,{
-	    			contact_name: this.updateContactName,
-	    			contact_phone: this.updateContactPhone,
-	    			contact_email: this.updateContactEmail,
-                    contact_gender: this.updateContactGender,
-                    contact_address: this.updateContactAddress
-	    		})
+                let formData = new FormData();
+                formData.append('_method', 'PUT');
+                formData.append('contact_profile_picture', this.file);
+                formData.append('contact_name', this.updateContactName);
+                formData.append('contact_email', this.updateContactEmail);
+                formData.append('contact_phone', this.updateContactPhone);
+                formData.append('contact_address', this.updateContactAddress);
+                formData.append('contact_gender', this.updateContactGender);
+
+	    		axios.post('http://localhost:8000/contacts/'+this.contactId, formData)
 	    		.then(function(res){
-	    			console.log(res);
+	    			// console.log(res);
 	    		})
 	    		.catch(function(err){
 	    			console.log(err.response);
-	    		});
+                });
+                
 	    		this.$parent.contacts[this.$parent.contactIndex].contact_name=this.updateContactName;
+                this.$parent.contacts[this.$parent.contactIndex].contact_email=this.updateContactEmail;
 	    		this.$parent.contacts[this.$parent.contactIndex].contact_phone=this.updateContactPhone;
-	    		this.$parent.contacts[this.$parent.contactIndex].contact_email=this.updateContactEmail;
+                this.$parent.contacts[this.$parent.contactIndex].contact_address=this.updateContactAddress;
+                this.$parent.contacts[this.$parent.contactIndex].contact_gender=this.updateContactGender;
+                this.$parent.contacts[this.$parent.contactIndex].contact_profile_picture=this.updateContactProfilePicture;
 	    		this.$parent.$parent.forceRerender();
 	    		$('#updateContactModal').modal('hide');
-	    	},
+            },
+            
+            onChangeFileUpload(){
+                this.file = this.$refs.file.files[0];
+                if(this.file){
+                    this.updateContactProfilePicture=1;
+                    var reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        $('#update_preview_contact_profile_picture').attr('src', e.target.result);
+                    }
+
+                    reader. readAsDataURL(this.file);
+                }
+            },
+
+            removeProfilePicture: function() {
+                this.updateContactProfilePicture=0;
+                $('#update_preview_contact_profile_picture').attr('src', 'img/profile_picture.png');
+            },
+
+            getImageUrl: function(contact_id, contact_profile_picture) {
+                if(contact_profile_picture){
+                    return "storage/contacts/"+contact_id+".jpg";
+                }
+                else{
+                    return "img/profile_picture.png";
+                }
+            }
         }
     }
 </script>

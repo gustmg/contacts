@@ -1,75 +1,70 @@
 <template>
-    <div class="row justify-content-center" align="center">
-        <div class="col-md-12">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newContactModal">Agregar contacto</button>
-        </div>
-        <div class="modal fade" id="newContactModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Nuevo contacto</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="newContactForm" method="POST" action="/contacts">
-                            <div class="container-fluid">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="row">
-                                            <div class="col-md-12 text-center">
-                                                <img id="preview_contact_profile_picture" src="img/profile_picture.png" width="80" height="80"><br>
+    <div class="modal fade" id="newContactModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Nuevo contacto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="newContactForm" method="POST" action="/contacts">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-12 text-center">
+                                            <img id="preview_contact_profile_picture" src="img/profile_picture.png" width="80" height="80"><br>
+                                        </div>
+                                        <div class="col-md-12"><br>
+                                            <div class="custom-file">
+                                                <input type="file" name="contact_profile_picture" id="contactProfilePicture" class="custom-file-input" ref="file" v-on:change="onChangeFileUpload"/>
+                                                <label class="custom-file-label" for="contactProfilePicture">Choose file</label>
                                             </div>
-                                            <div class="col-md-12"><br>
-                                                <div class="custom-file">
-                                                    <input type="file" name="contact_profile_picture" id="contactProfilePicture" class="custom-file-input" ref="file" v-on:change="onChangeFileUpload"/>
-                                                    <label class="custom-file-label" for="contactProfilePicture">Choose file</label>
-                                                </div>
-                                            </div>
-                                        </div><br>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group text-left">
-                                            <label for="contactName">Nombre *</label>
-                                            <input v-model="newContactName" name="contact_name" type="text" class="form-control" id="contactName" placeholder="Ingresar nombre..." required>
                                         </div>
+                                    </div><br>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group text-left">
+                                        <label for="contactName">Nombre *</label>
+                                        <input v-model="newContactName" name="contact_name" type="text" class="form-control" id="contactName" placeholder="Ingresar nombre..." required>
                                     </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group text-left">
-                                            <label for="contactMail">E-mail *</label>
-                                            <input v-model="newContactEmail" name="contact_email" type="email" class="form-control" id="contactEmail" placeholder="Ingresar e-mail..." required>
-                                        </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group text-left">
+                                        <label for="contactMail">E-mail *</label>
+                                        <input v-model="newContactEmail" name="contact_email" type="email" class="form-control" id="contactEmail" placeholder="Ingresar e-mail..." required>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group text-left">
-                                            <label for="contactPhone">Teléfono *</label>
-                                            <input v-model="newContactPhone" name="contact_phone" type="tel" class="form-control" id="contactPhone" placeholder="Ingresar teléfono..." required>
-                                        </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group text-left">
+                                        <label for="contactPhone">Teléfono *</label>
+                                        <input v-model="newContactPhone" name="contact_phone" type="tel" class="form-control" id="contactPhone" placeholder="Ingresar teléfono..." required>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group text-left">
-                                            <label for="contactGender">Sexo</label>
-                                            <select v-model="newContactGender" class="custom-select" name="contact_gender">
-                                                <option value="0">Masculino</option>
-                                                <option value="1">Femenino</option>
-                                            </select>
-                                        </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group text-left">
+                                        <label for="contactGender">Sexo</label>
+                                        <select v-model="newContactGender" class="custom-select" name="contact_gender">
+                                            <option value="0">Masculino</option>
+                                            <option value="1">Femenino</option>
+                                        </select>
                                     </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group text-left">
-                                            <label for="contactAddress">Dirección</label>
-                                            <input v-model="newContactAddress" name="contact_address" type="text" class="form-control" id="contactAddress" placeholder="Ingresar dirección...">
-                                        </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group text-left">
+                                        <label for="contactAddress">Dirección</label>
+                                        <input v-model="newContactAddress" name="contact_address" type="text" class="form-control" id="contactAddress" placeholder="Ingresar dirección...">
                                     </div>
                                 </div>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button v-on:click="saveContact" type="button" class="btn btn-primary">Guardar</button>
-                    </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button v-on:click="saveContact" type="button" class="btn btn-primary">Guardar</button>
                 </div>
             </div>
         </div>

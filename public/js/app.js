@@ -1779,6 +1779,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     contacts: {
@@ -1858,6 +1861,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     console.log('Contacts list component mounted!');
@@ -1876,17 +1895,21 @@ __webpack_require__.r(__webpack_exports__);
       contactEmail: '',
       contactAddress: '',
       contactGender: 0,
-      contactProfilePicture: 0
+      contactProfilePicture: 0,
+      totalCheckedInputs: 0,
+      contactsToDelete: []
     };
   },
   methods: {
     updateContact: function updateContact(contact, index) {
+      this.contactIndex = index;
       this.contactId = contact.contact_id;
       this.contactName = contact.contact_name;
       this.contactPhone = contact.contact_phone;
       this.contactEmail = contact.contact_email;
       this.contactAddress = contact.contact_address;
-      $('#updateContactModal').find('#updateContactGender').val(contact.contact_gender);
+      this.contactGender = contact.contact_gender;
+      this.contactProfilePicture = contact.contact_profile_picture; // $('#updateContactModal').find('#updateContactGender').val(contact.contact_gender);
     },
     setDeleteContactId: function setDeleteContactId(contact_id, index) {
       this.contactIndex = index;
@@ -1907,6 +1930,34 @@ __webpack_require__.r(__webpack_exports__);
       } else {
         return "img/profile_picture.png";
       }
+    },
+    checkAll: function checkAll() {
+      $(".check").prop('checked', $('#checkAll').prop('checked')); //Llena o vacía el array de id de contactos a eliminar dependiendo de si el checbox este activado o no.
+
+      this.contactsToDelete = [];
+      var idArray = [];
+
+      if ($('#checkAll').is(':checked')) {
+        this.contacts.forEach(function (contact) {
+          idArray.push(contact.contact_id);
+        });
+      }
+
+      this.contactsToDelete = idArray;
+      this.totalCheckedInputs = $('.check:checked').length;
+    },
+    addContactIdToArray: function addContactIdToArray(contact_id) {
+      this.contactsToDelete.push(contact_id);
+    },
+    countCheckedInputs: function countCheckedInputs(contact_id) {
+      if (this.contactsToDelete.includes(contact_id)) {
+        var index_to_delete = this.contactsToDelete.indexOf(contact_id);
+        this.contactsToDelete.splice(index_to_delete, 1);
+      } else {
+        this.contactsToDelete.push(contact_id);
+      }
+
+      this.totalCheckedInputs = $('.check:checked').length;
     }
   },
   computed: {
@@ -1984,6 +2035,63 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DeleteContactsModalComponent.vue?vue&type=script&lang=js&":
+/*!***************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DeleteContactsModalComponent.vue?vue&type=script&lang=js& ***!
+  \***************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  mounted: function mounted() {
+    console.log('Delete contacts button component mounted!');
+  },
+  props: {
+    contactsToDelete: {
+      type: Array
+    }
+  },
+  methods: {
+    deleteContacts: function deleteContacts() {
+      axios["delete"]('http://localhost:8000/contacts/' + this.contactId, {
+        contact_id: this.contactId
+      }).then(function (res) {
+        console.log(res);
+      })["catch"](function (err) {
+        console.log(err.response);
+      });
+      $('#deleteContactModal').modal('hide');
+      this.$parent.$parent.contacts.splice(this.contactIndex, 1);
+      this.$parent.$parent.forceRerender();
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&":
 /*!***************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js& ***!
@@ -2026,11 +2134,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
 //
 //
 //
@@ -2365,17 +2468,27 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     console.log('Update Contact Modal Component Mounted');
   },
   props: {
-    contactId: String,
+    contactIndex: Number,
+    contactId: Number,
     contactName: String,
     contactPhone: String,
     contactEmail: String,
-    contactGender: String,
-    contactAddress: String
+    contactGender: Number,
+    contactAddress: String,
+    contactProfilePicture: Number
   },
   data: function data() {
     return {
@@ -2383,8 +2496,9 @@ __webpack_require__.r(__webpack_exports__);
       updateContactName: '',
       updateContactPhone: '',
       updateContactEmail: '',
-      updateContactGender: '',
-      updateContactAddress: ''
+      updateContactGender: 0,
+      updateContactAddress: '',
+      updateContactProfilePicture: 0
     };
   },
   watch: {
@@ -2421,22 +2535,51 @@ __webpack_require__.r(__webpack_exports__);
       this.$emit('contact-address', newInputValue);
     },
     updateContact: function updateContact() {
-      axios.put('http://localhost:8000/contacts/' + this.contactId, {
-        contact_name: this.updateContactName,
-        contact_phone: this.updateContactPhone,
-        contact_email: this.updateContactEmail,
-        contact_gender: this.updateContactGender,
-        contact_address: this.updateContactAddress
-      }).then(function (res) {
-        console.log(res);
+      var formData = new FormData();
+      formData.append('_method', 'PUT');
+      formData.append('contact_profile_picture', this.file);
+      formData.append('contact_name', this.updateContactName);
+      formData.append('contact_email', this.updateContactEmail);
+      formData.append('contact_phone', this.updateContactPhone);
+      formData.append('contact_address', this.updateContactAddress);
+      formData.append('contact_gender', this.updateContactGender);
+      axios.post('http://localhost:8000/contacts/' + this.contactId, formData).then(function (res) {// console.log(res);
       })["catch"](function (err) {
         console.log(err.response);
       });
       this.$parent.contacts[this.$parent.contactIndex].contact_name = this.updateContactName;
-      this.$parent.contacts[this.$parent.contactIndex].contact_phone = this.updateContactPhone;
       this.$parent.contacts[this.$parent.contactIndex].contact_email = this.updateContactEmail;
+      this.$parent.contacts[this.$parent.contactIndex].contact_phone = this.updateContactPhone;
+      this.$parent.contacts[this.$parent.contactIndex].contact_address = this.updateContactAddress;
+      this.$parent.contacts[this.$parent.contactIndex].contact_gender = this.updateContactGender;
+      this.$parent.contacts[this.$parent.contactIndex].contact_profile_picture = this.updateContactProfilePicture;
       this.$parent.$parent.forceRerender();
       $('#updateContactModal').modal('hide');
+    },
+    onChangeFileUpload: function onChangeFileUpload() {
+      this.file = this.$refs.file.files[0];
+
+      if (this.file) {
+        this.updateContactProfilePicture = 1;
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+          $('#update_preview_contact_profile_picture').attr('src', e.target.result);
+        };
+
+        reader.readAsDataURL(this.file);
+      }
+    },
+    removeProfilePicture: function removeProfilePicture() {
+      this.updateContactProfilePicture = 0;
+      $('#update_preview_contact_profile_picture').attr('src', 'img/profile_picture.png');
+    },
+    getImageUrl: function getImageUrl(contact_id, contact_profile_picture) {
+      if (contact_profile_picture) {
+        return "storage/contacts/" + contact_id + ".jpg";
+      } else {
+        return "img/profile_picture.png";
+      }
     }
   }
 });
@@ -6920,6 +7063,25 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 // module
 exports.push([module.i, "\n.upload {\n    width: 0.1px;\n    height: 0.1px;\n    opacity: 0;\n}\n.upload + label {\n    width: 200px;\n    height:40px;\n    font-size: 1em;\n    font-weight: 500;\n    color: white;\n    line-height: 2.6em;\n    text-transform: uppercase;\n    text-align: center;\n    background-color: #ef494f;\n    display: inline-block;\n    border-radius: 10px;\n    box-shadow: 0px 3px 0px #a73337;\n    transition: 150ms;\n}\n.upload:focus + label,\n.upload + label:hover {\n    background-color: #ff6c71;\n    box-shadow: 0px 5px 0px #d03338;\n    cursor:pointer;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/UpdateContactModalComponent.vue?vue&type=style&index=0&lang=css&":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/UpdateContactModalComponent.vue?vue&type=style&index=0&lang=css& ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.remove-image{\n    float: none !important;\n}\n", ""]);
 
 // exports
 
@@ -37827,6 +37989,36 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/UpdateContactModalComponent.vue?vue&type=style&index=0&lang=css&":
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/UpdateContactModalComponent.vue?vue&type=style&index=0&lang=css& ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./UpdateContactModalComponent.vue?vue&type=style&index=0&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/UpdateContactModalComponent.vue?vue&type=style&index=0&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/lib/addStyles.js":
 /*!****************************************************!*\
   !*** ./node_modules/style-loader/lib/addStyles.js ***!
@@ -38436,7 +38628,6 @@ var render = function() {
         key: _vm.componentKey,
         attrs: { contacts: _vm.contacts }
       }),
-      _vm._v(" "),
       _c("br"),
       _vm._v(" "),
       _c("new-contact-modal-component")
@@ -38449,7 +38640,28 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row justify-content-center" }, [
+    return _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-md-6" }, [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-primary",
+            attrs: {
+              type: "button",
+              "data-toggle": "modal",
+              "data-target": "#newContactModal"
+            }
+          },
+          [_vm._v("Agregar contacto")]
+        ),
+        _vm._v(" "),
+        _c(
+          "button",
+          { staticClass: "btn btn-success", attrs: { type: "button" } },
+          [_vm._v("Exportar agenda")]
+        )
+      ]),
+      _vm._v(" "),
       _c("div", { staticClass: "col-md-6" }, [
         _c("form", [
           _c("div", { staticClass: "form-group" }, [
@@ -38508,13 +38720,65 @@ var render = function() {
           },
           [
             _c("table", { staticClass: "table" }, [
-              _vm._m(0),
+              _c("thead", [
+                _c("tr", [
+                  _c("th", { attrs: { scope: "col" } }, [
+                    _c(
+                      "div",
+                      { staticClass: "custom-control custom-checkbox" },
+                      [
+                        _c("input", {
+                          staticClass: "custom-control-input",
+                          attrs: { type: "checkbox", id: "checkAll" },
+                          on: { click: _vm.checkAll }
+                        }),
+                        _vm._v(" "),
+                        _c("label", {
+                          staticClass: "custom-control-label",
+                          attrs: { for: "checkAll" }
+                        })
+                      ]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("th", { attrs: { scope: "col" } }, [_vm._v("Nombre")]),
+                  _vm._v(" "),
+                  _c("th", { attrs: { scope: "col" } }, [_vm._v("E-mail")]),
+                  _vm._v(" "),
+                  _c("th", { attrs: { scope: "col" } }, [_vm._v("Teléfono")]),
+                  _vm._v(" "),
+                  _c("th", [_vm._v("Opciones")])
+                ])
+              ]),
               _vm._v(" "),
               _c(
                 "tbody",
                 _vm._l(_vm.filteredContacts, function(contact, index) {
                   return _c("tr", { attrs: { index: index } }, [
-                    _c("th", [_vm._v("#")]),
+                    _c("th", [
+                      _c(
+                        "div",
+                        { staticClass: "custom-control custom-checkbox" },
+                        [
+                          _c("input", {
+                            staticClass: "custom-control-input check",
+                            attrs: { type: "checkbox", id: index },
+                            on: {
+                              change: function($event) {
+                                return _vm.countCheckedInputs(
+                                  contact.contact_id
+                                )
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("label", {
+                            staticClass: "custom-control-label",
+                            attrs: { for: index }
+                          })
+                        ]
+                      )
+                    ]),
                     _vm._v(" "),
                     _c("td", [
                       _c("img", {
@@ -38663,11 +38927,14 @@ var render = function() {
         _vm._v(" "),
         _c("update-contact-modal-component", {
           attrs: {
-            "contact-id": _vm.contactId.toString(),
+            "contact-index": _vm.contactIndex,
+            "contact-id": _vm.contactId,
             "contact-name": _vm.contactName,
             "contact-phone": _vm.contactPhone,
             "contact-email": _vm.contactEmail,
-            "contact-address": _vm.contactAddress
+            "contact-address": _vm.contactAddress,
+            "contact-gender": _vm.contactGender,
+            "contact-profile-picture": _vm.contactProfilePicture
           }
         }),
         _vm._v(" "),
@@ -38676,32 +38943,42 @@ var render = function() {
             "contact-id": _vm.contactId.toString(),
             "contact-index": _vm.contactIndex
           }
+        }),
+        _vm._v(" "),
+        _c("delete-contacts-modal-component", {
+          attrs: { "contacts-to-delete": _vm.contactsToDelete }
         })
       ],
       1
-    )
+    ),
+    _vm._v(" "),
+    _vm.totalCheckedInputs > 0
+      ? _c("div", { staticClass: "col-md-12", attrs: { align: "center" } }, [
+          _c("br"),
+          _vm._v(" "),
+          _c(
+            "button",
+            { staticClass: "btn btn-secondary", attrs: { type: "button" } },
+            [_vm._v("Exportar contactos seleccionados")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-danger",
+              attrs: {
+                type: "button",
+                "data-toggle": "modal",
+                "data-target": "#deleteContactsModal"
+              }
+            },
+            [_vm._v("Eiminar contactos seleccionados")]
+          )
+        ])
+      : _vm._e()
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("thead", [
-      _c("tr", [
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("#")]),
-        _vm._v(" "),
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("Nombre")]),
-        _vm._v(" "),
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("E-mail")]),
-        _vm._v(" "),
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("Teléfono")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Opciones")])
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -38810,6 +39087,106 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DeleteContactsModalComponent.vue?vue&type=template&id=34325a79&":
+/*!*******************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DeleteContactsModalComponent.vue?vue&type=template&id=34325a79& ***!
+  \*******************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: {
+        id: "deleteContactsModal",
+        tabindex: "-1",
+        role: "dialog",
+        "aria-labelledby": "exampleModalLabel",
+        "aria-hidden": "true"
+      }
+    },
+    [
+      _c("div", { staticClass: "modal-dialog", attrs: { role: "document" } }, [
+        _c("div", { staticClass: "modal-content" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-body" }, [
+            _c("p", [
+              _vm._v(
+                "La información de " +
+                  _vm._s(_vm.contactsToDelete.length) +
+                  " contactos se perderá al eliminar."
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-footer" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-secondary",
+                attrs: { type: "button", "data-dismiss": "modal" }
+              },
+              [_vm._v("Cerrar")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                on: { click: _vm.deleteContacts }
+              },
+              [_vm._v("Aceptar")]
+            )
+          ])
+        ])
+      ])
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c(
+        "h5",
+        { staticClass: "modal-title", attrs: { id: "exampleModalLabel" } },
+        [_vm._v("¿Eliminar contactos?")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      )
+    ])
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&":
 /*!*******************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e& ***!
@@ -38874,326 +39251,289 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "row justify-content-center", attrs: { align: "center" } },
+    {
+      staticClass: "modal fade",
+      attrs: {
+        id: "newContactModal",
+        tabindex: "-1",
+        role: "dialog",
+        "aria-labelledby": "exampleModalLabel",
+        "aria-hidden": "true"
+      }
+    },
     [
-      _vm._m(0),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "modal fade",
-          attrs: {
-            id: "newContactModal",
-            tabindex: "-1",
-            role: "dialog",
-            "aria-labelledby": "exampleModalLabel",
-            "aria-hidden": "true"
-          }
-        },
-        [
-          _c(
-            "div",
-            { staticClass: "modal-dialog", attrs: { role: "document" } },
-            [
-              _c("div", { staticClass: "modal-content" }, [
-                _vm._m(1),
-                _vm._v(" "),
-                _c("div", { staticClass: "modal-body" }, [
-                  _c(
-                    "form",
-                    {
-                      attrs: {
-                        id: "newContactForm",
-                        method: "POST",
-                        action: "/contacts"
-                      }
-                    },
-                    [
-                      _c("div", { staticClass: "container-fluid" }, [
-                        _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-md-12" }, [
-                            _c("div", { staticClass: "row" }, [
-                              _vm._m(2),
-                              _vm._v(" "),
-                              _c("div", { staticClass: "col-md-12" }, [
-                                _c("br"),
-                                _vm._v(" "),
-                                _c("div", { staticClass: "custom-file" }, [
-                                  _c("input", {
-                                    ref: "file",
-                                    staticClass: "custom-file-input",
-                                    attrs: {
-                                      type: "file",
-                                      name: "contact_profile_picture",
-                                      id: "contactProfilePicture"
-                                    },
-                                    on: { change: _vm.onChangeFileUpload }
-                                  }),
-                                  _vm._v(" "),
-                                  _c(
-                                    "label",
-                                    {
-                                      staticClass: "custom-file-label",
-                                      attrs: { for: "contactProfilePicture" }
-                                    },
-                                    [_vm._v("Choose file")]
-                                  )
-                                ])
-                              ])
-                            ]),
-                            _c("br")
-                          ]),
+      _c("div", { staticClass: "modal-dialog", attrs: { role: "document" } }, [
+        _c("div", { staticClass: "modal-content" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-body" }, [
+            _c(
+              "form",
+              {
+                attrs: {
+                  id: "newContactForm",
+                  method: "POST",
+                  action: "/contacts"
+                }
+              },
+              [
+                _c("div", { staticClass: "container-fluid" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "col-md-12" }, [
+                      _c("div", { staticClass: "row" }, [
+                        _vm._m(1),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-md-12" }, [
+                          _c("br"),
                           _vm._v(" "),
-                          _c("div", { staticClass: "col-md-12" }, [
-                            _c("div", { staticClass: "form-group text-left" }, [
-                              _c("label", { attrs: { for: "contactName" } }, [
-                                _vm._v("Nombre *")
-                              ]),
-                              _vm._v(" "),
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.newContactName,
-                                    expression: "newContactName"
-                                  }
-                                ],
-                                staticClass: "form-control",
-                                attrs: {
-                                  name: "contact_name",
-                                  type: "text",
-                                  id: "contactName",
-                                  placeholder: "Ingresar nombre...",
-                                  required: ""
-                                },
-                                domProps: { value: _vm.newContactName },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
-                                    }
-                                    _vm.newContactName = $event.target.value
-                                  }
-                                }
-                              })
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-md-12" }, [
-                            _c("div", { staticClass: "form-group text-left" }, [
-                              _c("label", { attrs: { for: "contactMail" } }, [
-                                _vm._v("E-mail *")
-                              ]),
-                              _vm._v(" "),
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.newContactEmail,
-                                    expression: "newContactEmail"
-                                  }
-                                ],
-                                staticClass: "form-control",
-                                attrs: {
-                                  name: "contact_email",
-                                  type: "email",
-                                  id: "contactEmail",
-                                  placeholder: "Ingresar e-mail...",
-                                  required: ""
-                                },
-                                domProps: { value: _vm.newContactEmail },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
-                                    }
-                                    _vm.newContactEmail = $event.target.value
-                                  }
-                                }
-                              })
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-md-6" }, [
-                            _c("div", { staticClass: "form-group text-left" }, [
-                              _c("label", { attrs: { for: "contactPhone" } }, [
-                                _vm._v("Teléfono *")
-                              ]),
-                              _vm._v(" "),
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.newContactPhone,
-                                    expression: "newContactPhone"
-                                  }
-                                ],
-                                staticClass: "form-control",
-                                attrs: {
-                                  name: "contact_phone",
-                                  type: "tel",
-                                  id: "contactPhone",
-                                  placeholder: "Ingresar teléfono...",
-                                  required: ""
-                                },
-                                domProps: { value: _vm.newContactPhone },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
-                                    }
-                                    _vm.newContactPhone = $event.target.value
-                                  }
-                                }
-                              })
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-md-6" }, [
-                            _c("div", { staticClass: "form-group text-left" }, [
-                              _c("label", { attrs: { for: "contactGender" } }, [
-                                _vm._v("Sexo")
-                              ]),
-                              _vm._v(" "),
-                              _c(
-                                "select",
-                                {
-                                  directives: [
-                                    {
-                                      name: "model",
-                                      rawName: "v-model",
-                                      value: _vm.newContactGender,
-                                      expression: "newContactGender"
-                                    }
-                                  ],
-                                  staticClass: "custom-select",
-                                  attrs: { name: "contact_gender" },
-                                  on: {
-                                    change: function($event) {
-                                      var $$selectedVal = Array.prototype.filter
-                                        .call($event.target.options, function(
-                                          o
-                                        ) {
-                                          return o.selected
-                                        })
-                                        .map(function(o) {
-                                          var val =
-                                            "_value" in o ? o._value : o.value
-                                          return val
-                                        })
-                                      _vm.newContactGender = $event.target
-                                        .multiple
-                                        ? $$selectedVal
-                                        : $$selectedVal[0]
-                                    }
-                                  }
-                                },
-                                [
-                                  _c("option", { attrs: { value: "0" } }, [
-                                    _vm._v("Masculino")
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("option", { attrs: { value: "1" } }, [
-                                    _vm._v("Femenino")
-                                  ])
-                                ]
-                              )
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-md-12" }, [
-                            _c("div", { staticClass: "form-group text-left" }, [
-                              _c(
-                                "label",
-                                { attrs: { for: "contactAddress" } },
-                                [_vm._v("Dirección")]
-                              ),
-                              _vm._v(" "),
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.newContactAddress,
-                                    expression: "newContactAddress"
-                                  }
-                                ],
-                                staticClass: "form-control",
-                                attrs: {
-                                  name: "contact_address",
-                                  type: "text",
-                                  id: "contactAddress",
-                                  placeholder: "Ingresar dirección..."
-                                },
-                                domProps: { value: _vm.newContactAddress },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
-                                    }
-                                    _vm.newContactAddress = $event.target.value
-                                  }
-                                }
-                              })
-                            ])
+                          _c("div", { staticClass: "custom-file" }, [
+                            _c("input", {
+                              ref: "file",
+                              staticClass: "custom-file-input",
+                              attrs: {
+                                type: "file",
+                                name: "contact_profile_picture",
+                                id: "contactProfilePicture"
+                              },
+                              on: { change: _vm.onChangeFileUpload }
+                            }),
+                            _vm._v(" "),
+                            _c(
+                              "label",
+                              {
+                                staticClass: "custom-file-label",
+                                attrs: { for: "contactProfilePicture" }
+                              },
+                              [_vm._v("Choose file")]
+                            )
                           ])
                         ])
+                      ]),
+                      _c("br")
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-12" }, [
+                      _c("div", { staticClass: "form-group text-left" }, [
+                        _c("label", { attrs: { for: "contactName" } }, [
+                          _vm._v("Nombre *")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.newContactName,
+                              expression: "newContactName"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: {
+                            name: "contact_name",
+                            type: "text",
+                            id: "contactName",
+                            placeholder: "Ingresar nombre...",
+                            required: ""
+                          },
+                          domProps: { value: _vm.newContactName },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.newContactName = $event.target.value
+                            }
+                          }
+                        })
                       ])
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "modal-footer" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-secondary",
-                      attrs: { type: "button", "data-dismiss": "modal" }
-                    },
-                    [_vm._v("Cerrar")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary",
-                      attrs: { type: "button" },
-                      on: { click: _vm.saveContact }
-                    },
-                    [_vm._v("Guardar")]
-                  )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-12" }, [
+                      _c("div", { staticClass: "form-group text-left" }, [
+                        _c("label", { attrs: { for: "contactMail" } }, [
+                          _vm._v("E-mail *")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.newContactEmail,
+                              expression: "newContactEmail"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: {
+                            name: "contact_email",
+                            type: "email",
+                            id: "contactEmail",
+                            placeholder: "Ingresar e-mail...",
+                            required: ""
+                          },
+                          domProps: { value: _vm.newContactEmail },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.newContactEmail = $event.target.value
+                            }
+                          }
+                        })
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-6" }, [
+                      _c("div", { staticClass: "form-group text-left" }, [
+                        _c("label", { attrs: { for: "contactPhone" } }, [
+                          _vm._v("Teléfono *")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.newContactPhone,
+                              expression: "newContactPhone"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: {
+                            name: "contact_phone",
+                            type: "tel",
+                            id: "contactPhone",
+                            placeholder: "Ingresar teléfono...",
+                            required: ""
+                          },
+                          domProps: { value: _vm.newContactPhone },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.newContactPhone = $event.target.value
+                            }
+                          }
+                        })
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-6" }, [
+                      _c("div", { staticClass: "form-group text-left" }, [
+                        _c("label", { attrs: { for: "contactGender" } }, [
+                          _vm._v("Sexo")
+                        ]),
+                        _vm._v(" "),
+                        _c(
+                          "select",
+                          {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.newContactGender,
+                                expression: "newContactGender"
+                              }
+                            ],
+                            staticClass: "custom-select",
+                            attrs: { name: "contact_gender" },
+                            on: {
+                              change: function($event) {
+                                var $$selectedVal = Array.prototype.filter
+                                  .call($event.target.options, function(o) {
+                                    return o.selected
+                                  })
+                                  .map(function(o) {
+                                    var val = "_value" in o ? o._value : o.value
+                                    return val
+                                  })
+                                _vm.newContactGender = $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              }
+                            }
+                          },
+                          [
+                            _c("option", { attrs: { value: "0" } }, [
+                              _vm._v("Masculino")
+                            ]),
+                            _vm._v(" "),
+                            _c("option", { attrs: { value: "1" } }, [
+                              _vm._v("Femenino")
+                            ])
+                          ]
+                        )
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-12" }, [
+                      _c("div", { staticClass: "form-group text-left" }, [
+                        _c("label", { attrs: { for: "contactAddress" } }, [
+                          _vm._v("Dirección")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.newContactAddress,
+                              expression: "newContactAddress"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: {
+                            name: "contact_address",
+                            type: "text",
+                            id: "contactAddress",
+                            placeholder: "Ingresar dirección..."
+                          },
+                          domProps: { value: _vm.newContactAddress },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.newContactAddress = $event.target.value
+                            }
+                          }
+                        })
+                      ])
+                    ])
+                  ])
                 ])
-              ])
-            ]
-          )
-        ]
-      )
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-footer" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-secondary",
+                attrs: { type: "button", "data-dismiss": "modal" }
+              },
+              [_vm._v("Cerrar")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                on: { click: _vm.saveContact }
+              },
+              [_vm._v("Guardar")]
+            )
+          ])
+        ])
+      ])
     ]
   )
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-12" }, [
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-primary",
-          attrs: {
-            type: "button",
-            "data-toggle": "modal",
-            "data-target": "#newContactModal"
-          }
-        },
-        [_vm._v("Agregar contacto")]
-      )
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -39463,7 +39803,72 @@ var render = function() {
             _c("form", { attrs: { method: "POST", action: "/contacts" } }, [
               _c("div", { staticClass: "container-fluid" }, [
                 _c("div", { staticClass: "row" }, [
-                  _vm._m(1),
+                  _c("div", { staticClass: "col-md-12" }, [
+                    _c("div", { staticClass: "row" }, [
+                      _c("div", { staticClass: "col-md-12 text-center" }, [
+                        _c("img", {
+                          attrs: {
+                            id: "update_preview_contact_profile_picture",
+                            src: _vm.getImageUrl(
+                              _vm.contactId,
+                              _vm.contactProfilePicture
+                            ),
+                            width: "180",
+                            height: "180"
+                          }
+                        }),
+                        _c("br"),
+                        _vm._v(" "),
+                        _vm.contactProfilePicture
+                          ? _c(
+                              "button",
+                              {
+                                staticClass: "close remove-image",
+                                attrs: {
+                                  type: "button",
+                                  "aria-label": "Close"
+                                },
+                                on: { click: _vm.removeProfilePicture }
+                              },
+                              [
+                                _c(
+                                  "span",
+                                  { attrs: { "aria-hidden": "true" } },
+                                  [_vm._v("×")]
+                                )
+                              ]
+                            )
+                          : _vm._e()
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-md-12" }, [
+                        _c("br"),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "custom-file" }, [
+                          _c("input", {
+                            ref: "file",
+                            staticClass: "custom-file-input",
+                            attrs: {
+                              type: "file",
+                              name: "contact_profile_picture",
+                              id: "updateContactProfilePicture"
+                            },
+                            on: { change: _vm.onChangeFileUpload }
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "label",
+                            {
+                              staticClass: "custom-file-label",
+                              attrs: { for: "updateContactProfilePicture" }
+                            },
+                            [_vm._v("Choose file")]
+                          )
+                        ])
+                      ])
+                    ]),
+                    _c("br")
+                  ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-md-12" }, [
                     _c("div", { staticClass: "form-group text-left" }, [
@@ -39709,29 +40114,6 @@ var staticRenderFns = [
         },
         [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
       )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-12" }, [
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-md-6 text-center" }, [
-          _c("img", { attrs: { src: "", width: "80" } }),
-          _c("br")
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-6 text-center" }, [
-          _c("input", {
-            staticClass: "upload",
-            attrs: { type: "file", name: "file", id: "file" }
-          }),
-          _vm._v(" "),
-          _c("label", { attrs: { for: "file" } }, [_vm._v("Choose a file")])
-        ])
-      ]),
-      _c("br")
     ])
   }
 ]
@@ -51909,6 +52291,7 @@ Vue.component('new-contact-modal-component', __webpack_require__(/*! ./component
 Vue.component('update-contact-modal-component', __webpack_require__(/*! ./components/UpdateContactModalComponent.vue */ "./resources/js/components/UpdateContactModalComponent.vue")["default"]);
 Vue.component('show-contact-modal-component', __webpack_require__(/*! ./components/ShowContactModalComponent.vue */ "./resources/js/components/ShowContactModalComponent.vue")["default"]);
 Vue.component('delete-contact-modal-component', __webpack_require__(/*! ./components/DeleteContactModalComponent.vue */ "./resources/js/components/DeleteContactModalComponent.vue")["default"]);
+Vue.component('delete-contacts-modal-component', __webpack_require__(/*! ./components/DeleteContactsModalComponent.vue */ "./resources/js/components/DeleteContactsModalComponent.vue")["default"]);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -52204,6 +52587,75 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/DeleteContactsModalComponent.vue":
+/*!******************************************************************!*\
+  !*** ./resources/js/components/DeleteContactsModalComponent.vue ***!
+  \******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _DeleteContactsModalComponent_vue_vue_type_template_id_34325a79___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DeleteContactsModalComponent.vue?vue&type=template&id=34325a79& */ "./resources/js/components/DeleteContactsModalComponent.vue?vue&type=template&id=34325a79&");
+/* harmony import */ var _DeleteContactsModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DeleteContactsModalComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/DeleteContactsModalComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _DeleteContactsModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _DeleteContactsModalComponent_vue_vue_type_template_id_34325a79___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _DeleteContactsModalComponent_vue_vue_type_template_id_34325a79___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/DeleteContactsModalComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/DeleteContactsModalComponent.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************************!*\
+  !*** ./resources/js/components/DeleteContactsModalComponent.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DeleteContactsModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./DeleteContactsModalComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DeleteContactsModalComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DeleteContactsModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/DeleteContactsModalComponent.vue?vue&type=template&id=34325a79&":
+/*!*************************************************************************************************!*\
+  !*** ./resources/js/components/DeleteContactsModalComponent.vue?vue&type=template&id=34325a79& ***!
+  \*************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DeleteContactsModalComponent_vue_vue_type_template_id_34325a79___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./DeleteContactsModalComponent.vue?vue&type=template&id=34325a79& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DeleteContactsModalComponent.vue?vue&type=template&id=34325a79&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DeleteContactsModalComponent_vue_vue_type_template_id_34325a79___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DeleteContactsModalComponent_vue_vue_type_template_id_34325a79___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/ExampleComponent.vue":
 /*!******************************************************!*\
   !*** ./resources/js/components/ExampleComponent.vue ***!
@@ -52440,7 +52892,9 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _UpdateContactModalComponent_vue_vue_type_template_id_6b79512c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./UpdateContactModalComponent.vue?vue&type=template&id=6b79512c& */ "./resources/js/components/UpdateContactModalComponent.vue?vue&type=template&id=6b79512c&");
 /* harmony import */ var _UpdateContactModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./UpdateContactModalComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/UpdateContactModalComponent.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _UpdateContactModalComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./UpdateContactModalComponent.vue?vue&type=style&index=0&lang=css& */ "./resources/js/components/UpdateContactModalComponent.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
 
 
 
@@ -52448,7 +52902,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* normalize component */
 
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
   _UpdateContactModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
   _UpdateContactModalComponent_vue_vue_type_template_id_6b79512c___WEBPACK_IMPORTED_MODULE_0__["render"],
   _UpdateContactModalComponent_vue_vue_type_template_id_6b79512c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
@@ -52477,6 +52931,22 @@ component.options.__file = "resources/js/components/UpdateContactModalComponent.
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_UpdateContactModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./UpdateContactModalComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/UpdateContactModalComponent.vue?vue&type=script&lang=js&");
 /* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_UpdateContactModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/UpdateContactModalComponent.vue?vue&type=style&index=0&lang=css&":
+/*!**************************************************************************************************!*\
+  !*** ./resources/js/components/UpdateContactModalComponent.vue?vue&type=style&index=0&lang=css& ***!
+  \**************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_UpdateContactModalComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./UpdateContactModalComponent.vue?vue&type=style&index=0&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/UpdateContactModalComponent.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_UpdateContactModalComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_UpdateContactModalComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_UpdateContactModalComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_UpdateContactModalComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_UpdateContactModalComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
 
 /***/ }),
 

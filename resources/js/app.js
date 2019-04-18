@@ -27,6 +27,7 @@ Vue.component('new-contact-modal-component', require('./components/NewContactMod
 Vue.component('update-contact-modal-component', require('./components/UpdateContactModalComponent.vue').default);
 Vue.component('show-contact-modal-component', require('./components/ShowContactModalComponent.vue').default);
 Vue.component('delete-contact-modal-component', require('./components/DeleteContactModalComponent.vue').default);
+Vue.component('delete-contacts-modal-component', require('./components/DeleteContactsModalComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
