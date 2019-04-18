@@ -19,9 +19,6 @@
         </div>
     </div>
 </template>
-<style>
-
-</style>
 <script>
     export default {
         mounted() {
@@ -29,7 +26,8 @@
         },
 
         props: {
-            contactId: String
+            contactId: String,
+            contactIndex: Number
         },
 
         data() {
@@ -40,14 +38,16 @@
 
         methods: {
             deleteContact: function() {
-                console.log(this.contactId);
                 axios.delete('http://localhost:8000/contacts/'+this.contactId, {contact_id: this.contactId})
                 .then(function(res){
-	    			console.log(res);
+                    console.log(res);
 	    		})
 	    		.catch(function(err){
 	    			console.log(err.response);
 	    		});
+                $('#deleteContactModal').modal('hide');
+                this.$parent.$parent.contacts.splice(this.contactIndex, 1);
+                this.$parent.$parent.forceRerender();
             }
         }
     }

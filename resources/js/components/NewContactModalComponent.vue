@@ -13,17 +13,19 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form method="POST" action="/contacts">
+                        <form id="newContactForm" method="POST" action="/contacts">
                             <div class="container-fluid">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="row">
-                                            <div class="col-md-6 text-center">
+                                            <div class="col-md-12 text-center">
                                                 <img id="preview_contact_profile_picture" src="img/profile_picture.png" width="80" height="80"><br>
                                             </div>
-                                            <div class="col-md-6 text-center">
-                                                <input type="file" name="contact_profile_picture" id="file" ref="file" v-on:change="onChangeFileUpload"/>
-                                                <label for="file">Choose a file</label>
+                                            <div class="col-md-12"><br>
+                                                <div class="custom-file">
+                                                    <input type="file" name="contact_profile_picture" id="contactProfilePicture" class="custom-file-input" ref="file" v-on:change="onChangeFileUpload"/>
+                                                    <label class="custom-file-label" for="contactProfilePicture">Choose file</label>
+                                                </div>
                                             </div>
                                         </div><br>
                                     </div>
@@ -119,7 +121,7 @@
                 newContactPhone:null,
                 newContactGender:0,
                 newContactAddress:null,
-                file:''
+                newContactProfilePicture:0
             }
         },
 
@@ -131,7 +133,8 @@
                     contact_email: this.newContactEmail,
                     contact_phone: this.newContactPhone,
                     contact_gender: this.newContactGender,
-                    contact_address: this.newContactAddress
+                    contact_address: this.newContactAddress,
+                    contact_profile_picture: this.newContactProfilePicture
                 };
 
                 let formData = new FormData();
@@ -143,19 +146,22 @@
                 formData.append('contact_address', this.newContactAddress);
 
                 axios.post('http://localhost:8000/contacts', formData)
-                .then((res)=>{newContact.contact_id = res.data.contact_id})
+                .then((res)=>{
+                    newContact.contact_id = res.data.contact_id; 
+                    this.$parent.contacts.push(newContact);
+                    this.$parent.forceRerender();
+                    $('#newContactModal').modal('hide');
+                    this.resetForm();
+                })
                 .catch(function(err){
                     console.log(err);
                 });
-
-                this.$parent.contacts.push(newContact);
-                this.$parent.forceRerender();
-                $('#newContactModal').modal('hide');
             },
 
             onChangeFileUpload(){
                 this.file = this.$refs.file.files[0];
                 if(this.file){
+                    this.newContactProfilePicture=1;
                     var reader = new FileReader();
 
                     reader.onload = function(e) {
@@ -164,6 +170,11 @@
 
                     reader. readAsDataURL(this.file);
                 }
+            },
+
+            resetForm: function() {
+                $('#preview_contact_profile_picture').attr('src', 'img/profile_picture.png');
+                $('#newContactForm').get(0).reset();
             }
         }
     }

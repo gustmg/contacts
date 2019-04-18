@@ -1870,12 +1870,13 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       contactIndex: null,
-      contactId: '',
+      contactId: 0,
       contactName: '',
       contactPhone: '',
       contactEmail: '',
-      contactGender: '',
-      contactAddress: ''
+      contactAddress: '',
+      contactGender: 0,
+      contactProfilePicture: 0
     };
   },
   methods: {
@@ -1887,14 +1888,18 @@ __webpack_require__.r(__webpack_exports__);
       this.contactAddress = contact.contact_address;
       $('#updateContactModal').find('#updateContactGender').val(contact.contact_gender);
     },
-    setDeleteContactId: function setDeleteContactId(contact_id) {
+    setDeleteContactId: function setDeleteContactId(contact_id, index) {
+      this.contactIndex = index;
       this.contactId = contact_id;
     },
     showContact: function showContact(contact) {
+      this.contactId = contact.contact_id;
       this.contactName = contact.contact_name;
       this.contactPhone = contact.contact_phone;
       this.contactEmail = contact.contact_email;
       this.contactAddress = contact.contact_address;
+      this.contactGender = contact.contact_gender;
+      this.contactProfilePicture = contact.contact_profile_picture;
     },
     getImageUrl: function getImageUrl(contact_id, contact_profile_picture) {
       if (contact_profile_picture) {
@@ -1948,15 +1953,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     console.log('Delete Contact Modal Component Mounted');
   },
   props: {
-    contactId: String
+    contactId: String,
+    contactIndex: Number
   },
   data: function data() {
     return {
@@ -1965,7 +1968,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     deleteContact: function deleteContact() {
-      console.log(this.contactId);
       axios["delete"]('http://localhost:8000/contacts/' + this.contactId, {
         contact_id: this.contactId
       }).then(function (res) {
@@ -1973,6 +1975,9 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (err) {
         console.log(err.response);
       });
+      $('#deleteContactModal').modal('hide');
+      this.$parent.$parent.contacts.splice(this.contactIndex, 1);
+      this.$parent.$parent.forceRerender();
     }
   }
 });
@@ -2128,6 +2133,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     console.log('New contact modal component.');
@@ -2140,18 +2147,21 @@ __webpack_require__.r(__webpack_exports__);
       newContactPhone: null,
       newContactGender: 0,
       newContactAddress: null,
-      file: ''
+      newContactProfilePicture: 0
     };
   },
   methods: {
     saveContact: function saveContact() {
+      var _this = this;
+
       var newContact = {
         contact_id: '',
         contact_name: this.newContactName,
         contact_email: this.newContactEmail,
         contact_phone: this.newContactPhone,
         contact_gender: this.newContactGender,
-        contact_address: this.newContactAddress
+        contact_address: this.newContactAddress,
+        contact_profile_picture: this.newContactProfilePicture
       };
       var formData = new FormData();
       formData.append('contact_profile_picture', this.file);
@@ -2162,17 +2172,23 @@ __webpack_require__.r(__webpack_exports__);
       formData.append('contact_address', this.newContactAddress);
       axios.post('http://localhost:8000/contacts', formData).then(function (res) {
         newContact.contact_id = res.data.contact_id;
+
+        _this.$parent.contacts.push(newContact);
+
+        _this.$parent.forceRerender();
+
+        $('#newContactModal').modal('hide');
+
+        _this.resetForm();
       })["catch"](function (err) {
         console.log(err);
       });
-      this.$parent.contacts.push(newContact);
-      this.$parent.forceRerender();
-      $('#newContactModal').modal('hide');
     },
     onChangeFileUpload: function onChangeFileUpload() {
       this.file = this.$refs.file.files[0];
 
       if (this.file) {
+        this.newContactProfilePicture = 1;
         var reader = new FileReader();
 
         reader.onload = function (e) {
@@ -2181,6 +2197,10 @@ __webpack_require__.r(__webpack_exports__);
 
         reader.readAsDataURL(this.file);
       }
+    },
+    resetForm: function resetForm() {
+      $('#preview_contact_profile_picture').attr('src', 'img/profile_picture.png');
+      $('#newContactForm').get(0).reset();
     }
   }
 });
@@ -2219,16 +2239,45 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     console.log('Show contact modal component mounted!');
   },
   props: {
+    contactId: Number,
     contactName: String,
     contactEmail: String,
     contactPhone: String,
-    // contactGender: String,
-    contactAddress: String
+    contactAddress: String,
+    contactGender: Number,
+    contactProfilePicture: Number
+  },
+  methods: {
+    getImageUrl: function getImageUrl(contact_id, contact_profile_picture) {
+      if (contact_profile_picture) {
+        return "storage/contacts/" + contact_id + ".jpg";
+      } else {
+        return "img/profile_picture.png";
+      }
+    }
   }
 });
 
@@ -38464,7 +38513,7 @@ var render = function() {
               _c(
                 "tbody",
                 _vm._l(_vm.filteredContacts, function(contact, index) {
-                  return _c("tr", [
+                  return _c("tr", { attrs: { index: index } }, [
                     _c("th", [_vm._v("#")]),
                     _vm._v(" "),
                     _c("td", [
@@ -38474,7 +38523,8 @@ var render = function() {
                             contact.contact_id,
                             contact.contact_profile_picture
                           ),
-                          width: "32"
+                          width: "32",
+                          height: "32"
                         }
                       }),
                       _vm._v("    \n                            "),
@@ -38540,7 +38590,10 @@ var render = function() {
                           },
                           on: {
                             click: function($event) {
-                              return _vm.setDeleteContactId(contact.contact_id)
+                              return _vm.setDeleteContactId(
+                                contact.contact_id,
+                                index
+                              )
                             }
                           }
                         },
@@ -38598,10 +38651,13 @@ var render = function() {
         _vm._v(" "),
         _c("show-contact-modal-component", {
           attrs: {
+            "contact-id": _vm.contactId,
             "contact-name": _vm.contactName,
             "contact-phone": _vm.contactPhone,
             "contact-email": _vm.contactEmail,
-            "contact-address": _vm.contactAddress
+            "contact-address": _vm.contactAddress,
+            "contact-gender": _vm.contactGender,
+            "contact-profile-picture": _vm.contactProfilePicture
           }
         }),
         _vm._v(" "),
@@ -38616,7 +38672,10 @@ var render = function() {
         }),
         _vm._v(" "),
         _c("delete-contact-modal-component", {
-          attrs: { "contact-id": _vm.contactId.toString() }
+          attrs: {
+            "contact-id": _vm.contactId.toString(),
+            "contact-index": _vm.contactIndex
+          }
         })
       ],
       1
@@ -38842,7 +38901,13 @@ var render = function() {
                 _c("div", { staticClass: "modal-body" }, [
                   _c(
                     "form",
-                    { attrs: { method: "POST", action: "/contacts" } },
+                    {
+                      attrs: {
+                        id: "newContactForm",
+                        method: "POST",
+                        action: "/contacts"
+                      }
+                    },
                     [
                       _c("div", { staticClass: "container-fluid" }, [
                         _c("div", { staticClass: "row" }, [
@@ -38850,25 +38915,31 @@ var render = function() {
                             _c("div", { staticClass: "row" }, [
                               _vm._m(2),
                               _vm._v(" "),
-                              _c(
-                                "div",
-                                { staticClass: "col-md-6 text-center" },
-                                [
+                              _c("div", { staticClass: "col-md-12" }, [
+                                _c("br"),
+                                _vm._v(" "),
+                                _c("div", { staticClass: "custom-file" }, [
                                   _c("input", {
                                     ref: "file",
+                                    staticClass: "custom-file-input",
                                     attrs: {
                                       type: "file",
                                       name: "contact_profile_picture",
-                                      id: "file"
+                                      id: "contactProfilePicture"
                                     },
                                     on: { change: _vm.onChangeFileUpload }
                                   }),
                                   _vm._v(" "),
-                                  _c("label", { attrs: { for: "file" } }, [
-                                    _vm._v("Choose a file")
-                                  ])
-                                ]
-                              )
+                                  _c(
+                                    "label",
+                                    {
+                                      staticClass: "custom-file-label",
+                                      attrs: { for: "contactProfilePicture" }
+                                    },
+                                    [_vm._v("Choose file")]
+                                  )
+                                ])
+                              ])
                             ]),
                             _c("br")
                           ]),
@@ -39152,7 +39223,7 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-6 text-center" }, [
+    return _c("div", { staticClass: "col-md-12 text-center" }, [
       _c("img", {
         attrs: {
           id: "preview_contact_profile_picture",
@@ -39204,12 +39275,87 @@ var render = function() {
           _vm._m(0),
           _vm._v(" "),
           _c("div", { staticClass: "modal-body" }, [
-            _vm._v(
-              "\n                " + _vm._s(_vm.contactName) + "\n            "
-            )
+            _c("div", { staticClass: "row" }, [
+              _c("div", { staticClass: "col-md-5 text-center" }, [
+                _c("img", {
+                  attrs: {
+                    src: _vm.getImageUrl(
+                      _vm.contactId,
+                      _vm.contactProfilePicture
+                    ),
+                    width: "180",
+                    height: "180"
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _vm.contactGender == 0
+                ? _c("div", { staticClass: "col-md-7" }, [
+                    _c("p", [
+                      _c("i", { staticClass: "material-icons align-bottom" }, [
+                        _vm._v("person")
+                      ]),
+                      _vm._v(" " + _vm._s(_vm.contactName))
+                    ]),
+                    _vm._v(" "),
+                    _c("p", [
+                      _c("i", { staticClass: "material-icons align-bottom" }, [
+                        _vm._v("mail")
+                      ]),
+                      _vm._v(" " + _vm._s(_vm.contactEmail))
+                    ]),
+                    _vm._v(" "),
+                    _c("p", [
+                      _c("i", { staticClass: "material-icons align-bottom" }, [
+                        _vm._v("phone")
+                      ]),
+                      _vm._v(" " + _vm._s(_vm.contactPhone))
+                    ]),
+                    _vm._v(" "),
+                    _vm._m(1),
+                    _vm._v(" "),
+                    _c("p", [
+                      _c("i", { staticClass: "material-icons align-bottom" }, [
+                        _vm._v("home")
+                      ]),
+                      _vm._v(" " + _vm._s(_vm.contactAddress))
+                    ])
+                  ])
+                : _c("div", { staticClass: "col-md-7" }, [
+                    _c("p", [
+                      _c("i", { staticClass: "material-icons align-bottom" }, [
+                        _vm._v("person")
+                      ]),
+                      _vm._v(" " + _vm._s(_vm.contactName))
+                    ]),
+                    _vm._v(" "),
+                    _c("p", [
+                      _c("i", { staticClass: "material-icons align-bottom" }, [
+                        _vm._v("mail")
+                      ]),
+                      _vm._v(" " + _vm._s(_vm.contactEmail))
+                    ]),
+                    _vm._v(" "),
+                    _c("p", [
+                      _c("i", { staticClass: "material-icons align-bottom" }, [
+                        _vm._v("phone")
+                      ]),
+                      _vm._v(" " + _vm._s(_vm.contactPhone))
+                    ]),
+                    _vm._v(" "),
+                    _vm._m(2),
+                    _vm._v(" "),
+                    _c("p", [
+                      _c("i", { staticClass: "material-icons align-bottom" }, [
+                        _vm._v("home")
+                      ]),
+                      _vm._v(" " + _vm._s(_vm.contactAddress))
+                    ])
+                  ])
+            ])
           ]),
           _vm._v(" "),
-          _vm._m(1)
+          _vm._m(3)
         ])
       ])
     ]
@@ -39239,6 +39385,24 @@ var staticRenderFns = [
         },
         [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
       )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", [
+      _c("i", { staticClass: "material-icons align-bottom" }, [_vm._v("wc")]),
+      _vm._v(" Hombre")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", [
+      _c("i", { staticClass: "material-icons align-bottom" }, [_vm._v("wc")]),
+      _vm._v(" Mujer")
     ])
   },
   function() {
