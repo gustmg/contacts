@@ -33,17 +33,20 @@
 
         methods: {
             deleteContacts: function() {
-                axios.delete('http://localhost:8000/contacts/'+this.contactId, {contact_id: this.contactId})
-                .then(function(res){
-                    console.log(res);
-	    		})
-	    		.catch(function(err){
-	    			console.log(err.response);
-	    		});
+                this.contactsToDelete.forEach(function(contact_id) {
+                    axios.delete('http://localhost:8000/contacts/'+contact_id, {contact_id: contact_id})
+                    .then(function(res){
+                        console.log(res);
+                    })
+                    .catch(function(err){
+                        console.log(err.response);
+                    });
+                });
+                
                 $('#deleteContactModal').modal('hide');
-                this.$parent.$parent.contacts.splice(this.contactIndex, 1);
+                
                 this.$parent.$parent.forceRerender();
-            }
+            },
         }
     }
 </script>
