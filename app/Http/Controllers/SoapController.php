@@ -24,6 +24,18 @@ class SoapController extends Controller
             array('return' => 'xsd:string')     // output
         );
 
+        $server->register('storeContact',
+            array(
+                'contact_name' => 'xsd:string',
+                'contact_phone' => 'xsd:string',
+                'contact_email' => 'xsd:string',
+                'contact_address' => 'xsd:string',
+                'contact_gender' => 'xsd:boolean',
+                'contact_profile_picture' => 'xsd:boolean',
+            ),
+            array('return' => 'xsd:boolean')
+        );
+
 
         // Get our posted data if the service is being consumed
         // otherwise leave this data blank.

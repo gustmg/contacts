@@ -2251,13 +2251,12 @@ __webpack_require__.r(__webpack_exports__);
       newContactPhone: null,
       newContactGender: 0,
       newContactAddress: null,
-      newContactProfilePicture: 0
+      newContactProfilePicture: 0,
+      contactProfilePictureFile: null
     };
   },
   methods: {
     saveContact: function saveContact() {
-      var _this = this;
-
       var newContact = {
         contact_id: '',
         contact_name: this.newContactName,
@@ -2266,24 +2265,42 @@ __webpack_require__.r(__webpack_exports__);
         contact_gender: this.newContactGender,
         contact_address: this.newContactAddress,
         contact_profile_picture: this.newContactProfilePicture
+      }; // // Sending data via axios
+      // let formData = new FormData();
+      // formData.append('contact_profile_picture', this.file);
+      // formData.append('contact_name', this.newContactName);
+      // formData.append('contact_email', this.newContactEmail);
+      // formData.append('contact_phone', this.newContactPhone);
+      // formData.append('contact_gender', this.newContactGender);
+      // formData.append('contact_address', this.newContactAddress);
+      // axios.post('http://localhost:8000/contacts', formData)
+      // .then((res)=>{
+      //     newContact.contact_id = res.data.contact_id; 
+      //     this.$parent.contacts.push(newContact);
+      //     this.$parent.forceRerender();
+      //     $('#newContactModal').modal('hide');
+      //     this.resetForm();
+      // })
+      // .catch(function(err){
+      //     console.log(err);
+      // });
+      //Sending data via json
+
+      var contactData = {
+        'contact_name': this.newContactName,
+        'contact_email': this.newContactEmail,
+        'contact_phone': this.newContactPhone,
+        'contact_gender': this.newContactGender,
+        'contact_address': this.newContactAddress,
+        'contact_profile_picture': this.contactProfilePictureFile
       };
-      var formData = new FormData();
-      formData.append('contact_profile_picture', this.file);
-      formData.append('contact_name', this.newContactName);
-      formData.append('contact_email', this.newContactEmail);
-      formData.append('contact_phone', this.newContactPhone);
-      formData.append('contact_gender', this.newContactGender);
-      formData.append('contact_address', this.newContactAddress);
-      axios.post('http://localhost:8000/contacts', formData).then(function (res) {
-        newContact.contact_id = res.data.contact_id;
-
-        _this.$parent.contacts.push(newContact);
-
-        _this.$parent.forceRerender();
-
-        $('#newContactModal').modal('hide');
-
-        _this.resetForm();
+      axios.post('http://localhost:8000/contacts', JSON.stringify(contactData)).then(function (res) {
+        // newContact.contact_id = res.data.contact_id; 
+        // this.$parent.contacts.push(newContact);
+        // this.$parent.forceRerender();
+        // $('#newContactModal').modal('hide');
+        // this.resetForm();
+        console.log(res.data);
       })["catch"](function (err) {
         console.log(err);
       });
@@ -2297,10 +2314,15 @@ __webpack_require__.r(__webpack_exports__);
 
         reader.onload = function (e) {
           $('#preview_contact_profile_picture').attr('src', e.target.result);
+          this.setImageFile(reader.result); //Necesary for json request
+          // console.log(reader.result); 
         };
 
         reader.readAsDataURL(this.file);
       }
+    },
+    setImageFile: function setImageFile(reader_result) {
+      this.contactProfilePictureFile = reader_result;
     },
     resetForm: function resetForm() {
       $('#preview_contact_profile_picture').attr('src', 'img/profile_picture.png');
