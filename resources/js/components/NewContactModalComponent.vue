@@ -158,15 +158,17 @@
                 //Sending data via json
 
                 var contactData = {
-                    'contact_name' : this.newContactName,
-                    'contact_email' : this.newContactEmail,
-                    'contact_phone' : this.newContactPhone,
-                    'contact_gender' : this.newContactGender,
-                    'contact_address' : this.newContactAddress,
-                    'contact_profile_picture' : this.contactProfilePictureFile
+                    "contact_name" : this.newContactName,
+                    "contact_email" : this.newContactEmail,
+                    "contact_phone" : this.newContactPhone,
+                    "contact_gender" : this.newContactGender,
+                    "contact_address" : this.newContactAddress,
+                    "contact_profile_picture" : this.contactProfilePictureFile
                 };
 
-                axios.post('http://localhost:8000/contacts', JSON.stringify(contactData))
+                var json=JSON.stringify(contactData);
+
+                axios.post('http://localhost:8000/contacts', {json:json})
                 .then((res)=>{
                     // newContact.contact_id = res.data.contact_id; 
                     // this.$parent.contacts.push(newContact);
@@ -185,11 +187,11 @@
                 if(this.file){
                     this.newContactProfilePicture=1;
                     var reader = new FileReader();
+                    var self=this;
 
                     reader.onload = function(e) {
                         $('#preview_contact_profile_picture').attr('src', e.target.result);
-                        this.setImageFile(reader.result);//Necesary for json request
-                        // console.log(reader.result); 
+                        self.setImageFile(reader.result);//Necesary for json request
                     }
 
                     reader. readAsDataURL(this.file);
@@ -198,6 +200,7 @@
 
             setImageFile: function(reader_result) {
                 this.contactProfilePictureFile = reader_result;
+                // console.log(this.contactProfilePictureFile);
             },
 
             resetForm: function() {

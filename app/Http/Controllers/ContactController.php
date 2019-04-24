@@ -30,7 +30,8 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
-        return $request;
+        $json=json_decode($request->json);
+        return var_dump($json);
         // if($request->ajax()){
         //     $validatedData = $request->validate([
         //         'contact_name' => 'required',

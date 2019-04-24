@@ -2287,14 +2287,17 @@ __webpack_require__.r(__webpack_exports__);
       //Sending data via json
 
       var contactData = {
-        'contact_name': this.newContactName,
-        'contact_email': this.newContactEmail,
-        'contact_phone': this.newContactPhone,
-        'contact_gender': this.newContactGender,
-        'contact_address': this.newContactAddress,
-        'contact_profile_picture': this.contactProfilePictureFile
+        "contact_name": this.newContactName,
+        "contact_email": this.newContactEmail,
+        "contact_phone": this.newContactPhone,
+        "contact_gender": this.newContactGender,
+        "contact_address": this.newContactAddress,
+        "contact_profile_picture": this.contactProfilePictureFile
       };
-      axios.post('http://localhost:8000/contacts', JSON.stringify(contactData)).then(function (res) {
+      var json = JSON.stringify(contactData);
+      axios.post('http://localhost:8000/contacts', {
+        json: json
+      }).then(function (res) {
         // newContact.contact_id = res.data.contact_id; 
         // this.$parent.contacts.push(newContact);
         // this.$parent.forceRerender();
@@ -2311,18 +2314,18 @@ __webpack_require__.r(__webpack_exports__);
       if (this.file) {
         this.newContactProfilePicture = 1;
         var reader = new FileReader();
+        var self = this;
 
         reader.onload = function (e) {
           $('#preview_contact_profile_picture').attr('src', e.target.result);
-          this.setImageFile(reader.result); //Necesary for json request
-          // console.log(reader.result); 
+          self.setImageFile(reader.result); //Necesary for json request
         };
 
         reader.readAsDataURL(this.file);
       }
     },
     setImageFile: function setImageFile(reader_result) {
-      this.contactProfilePictureFile = reader_result;
+      this.contactProfilePictureFile = reader_result; // console.log(this.contactProfilePictureFile);
     },
     resetForm: function resetForm() {
       $('#preview_contact_profile_picture').attr('src', 'img/profile_picture.png');
