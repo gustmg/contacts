@@ -8,7 +8,6 @@ use Auth;
 use View;
 use File;
 
-
 class ContactController extends Controller
 {
     /**
@@ -30,8 +29,9 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
-        $json=json_decode($request->json);
-        return var_dump($json);
+        // $json=json_decode($request->json);
+        
+        
         // if($request->ajax()){
         //     $validatedData = $request->validate([
         //         'contact_name' => 'required',

@@ -168,18 +168,25 @@
 
                 var json=JSON.stringify(contactData);
 
-                axios.post('http://localhost:8000/contacts', {json:json})
-                .then((res)=>{
-                    // newContact.contact_id = res.data.contact_id; 
-                    // this.$parent.contacts.push(newContact);
-                    // this.$parent.forceRerender();
-                    // $('#newContactModal').modal('hide');
-                    // this.resetForm();
-                    console.log(res.data);
-                })
-                .catch(function(err){
-                    console.log(err);
-                });                
+                // axios.post('http://localhost:8000/contacts', {json:json})
+                // .then((res)=>{
+                //     // newContact.contact_id = res.data.contact_id; 
+                //     // this.$parent.contacts.push(newContact);
+                //     // this.$parent.forceRerender();
+                //     // $('#newContactModal').modal('hide');
+                //     // this.resetForm();
+                //     console.log(res.data);
+                // })
+                // .catch(function(err){
+                //     console.log(err);
+                // });   
+
+                $.ajax({
+                  url: "http://localhost/prueba/soap.php",
+                  type: "POST",
+                  data: {id : json},
+                  dataType: "html"
+                });             
             },
 
             onChangeFileUpload(){

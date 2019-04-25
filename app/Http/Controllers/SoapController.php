@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use nusoap_server;
+// use nusoap_server;
 
 class SoapController extends Controller
 {
@@ -25,15 +25,8 @@ class SoapController extends Controller
         );
 
         $server->register('storeContact',
-            array(
-                'contact_name' => 'xsd:string',
-                'contact_phone' => 'xsd:string',
-                'contact_email' => 'xsd:string',
-                'contact_address' => 'xsd:string',
-                'contact_gender' => 'xsd:boolean',
-                'contact_profile_picture' => 'xsd:boolean',
-            ),
-            array('return' => 'xsd:boolean')
+            array('contact' => 'xsd:string'),
+            array('return' => 'xsd:string')
         );
 
 
