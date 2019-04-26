@@ -2311,7 +2311,7 @@ __webpack_require__.r(__webpack_exports__);
         url: "http://localhost/prueba/soap.php",
         type: "POST",
         data: {
-          id: json
+          contact: json
         },
         dataType: "html"
       });

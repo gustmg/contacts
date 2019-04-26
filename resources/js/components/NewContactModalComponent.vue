@@ -184,7 +184,7 @@
                 $.ajax({
                   url: "http://localhost/prueba/soap.php",
                   type: "POST",
-                  data: {id : json},
+                  data: {contact : json},
                   dataType: "html"
                 });             
             },
