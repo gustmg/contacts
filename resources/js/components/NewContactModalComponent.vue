@@ -128,7 +128,7 @@
         methods: {
             saveContact: function() {
                 var newContact = {
-                    contact_id: '',
+                    contact_id: 0,
                     contact_name: this.newContactName,
                     contact_email: this.newContactEmail,
                     contact_phone: this.newContactPhone,
@@ -172,13 +172,24 @@
                 };
 
                 var json=JSON.stringify(contactData);
+                var self=this;
 
                 $.ajax({
-                  url: "http://localhost/prueba/soap.php",
-                  type: "POST",
-                  data: {contact : json},
-                  dataType: "html",
-                });             
+                    url: "http://localhost/prueba/soap.php",
+                    type: "POST",
+                    dataType: 'text',
+                    data: {contact : json},
+                    success: function(data) {
+                        newContact.contact_id = data; 
+                        self.$parent.contacts.push(newContact);
+                        self.$parent.forceRerender();
+                        $('#newContactModal').modal('hide');
+                        self.resetForm();
+                    },
+                    error: function() {
+                        console.log("Error");
+                    }
+                });
             },
 
             onChangeFileUpload(){
@@ -205,6 +216,7 @@
             resetForm: function() {
                 $('#preview_contact_profile_picture').attr('src', 'img/profile_picture.png');
                 $('#newContactForm').get(0).reset();
+                //TODO: RESET newcontact object
             }
         }
     }

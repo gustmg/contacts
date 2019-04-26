@@ -46,7 +46,7 @@
         },
 
         props: {
-            contactId: Number,
+            contactId: String,
             contactName: String,
             contactEmail: String,
             contactPhone: String,

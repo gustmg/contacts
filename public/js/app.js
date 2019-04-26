@@ -1877,7 +1877,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     console.log('Contacts list component mounted!');
@@ -1890,7 +1889,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       contactIndex: null,
-      contactId: 0,
+      contactId: '',
       contactName: '',
       contactPhone: '',
       contactEmail: '',
@@ -2020,23 +2019,23 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     deleteContact: function deleteContact() {
-      // axios.delete('http://localhost:8000/contacts/'+this.contactId, {contact_id: this.contactId})
-      // .then(function(res){
-      //     console.log(res);
-      // })
-      // .catch(function(err){
-      // 	console.log(err.response);
-      // });
-      // $('#deleteContactModal').modal('hide');
-      // this.$parent.$parent.contacts.splice(this.contactIndex, 1);
-      // this.$parent.$parent.forceRerender();
+      var self = this;
       $.ajax({
         url: "http://localhost/prueba/soapDelete.php",
         type: "POST",
         data: {
           contact_id: this.contactId
         },
-        dataType: "html"
+        dataType: "html",
+        success: function success() {
+          console.log('Eliminando indice: ' + self.contactIndex);
+          $('#deleteContactModal').modal('hide');
+          self.$parent.$parent.contacts.splice(self.contactIndex, 1);
+          self.$parent.$parent.forceRerender();
+        },
+        error: function error() {
+          console.log('Error.');
+        }
       });
     }
   }
@@ -2270,7 +2269,7 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     saveContact: function saveContact() {
       var newContact = {
-        contact_id: '',
+        contact_id: 0,
         contact_name: this.newContactName,
         contact_email: this.newContactEmail,
         contact_phone: this.newContactPhone,
@@ -2308,13 +2307,24 @@ __webpack_require__.r(__webpack_exports__);
         "user_id": this.userId
       };
       var json = JSON.stringify(contactData);
+      var self = this;
       $.ajax({
         url: "http://localhost/prueba/soap.php",
         type: "POST",
+        dataType: 'text',
         data: {
           contact: json
         },
-        dataType: "html"
+        success: function success(data) {
+          newContact.contact_id = data;
+          self.$parent.contacts.push(newContact);
+          self.$parent.forceRerender();
+          $('#newContactModal').modal('hide');
+          self.resetForm();
+        },
+        error: function error() {
+          console.log("Error");
+        }
       });
     },
     onChangeFileUpload: function onChangeFileUpload() {
@@ -2338,7 +2348,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     resetForm: function resetForm() {
       $('#preview_contact_profile_picture').attr('src', 'img/profile_picture.png');
-      $('#newContactForm').get(0).reset();
+      $('#newContactForm').get(0).reset(); //TODO: RESET newcontact object
     }
   }
 });
@@ -2400,7 +2410,7 @@ __webpack_require__.r(__webpack_exports__);
     console.log('Show contact modal component mounted!');
   },
   props: {
-    contactId: Number,
+    contactId: String,
     contactName: String,
     contactEmail: String,
     contactPhone: String,
@@ -2517,7 +2527,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   props: {
     contactIndex: Number,
-    contactId: Number,
+    contactId: String,
     contactName: String,
     contactPhone: String,
     contactEmail: String,
@@ -2601,6 +2611,7 @@ __webpack_require__.r(__webpack_exports__);
         "contact_address": this.updateContactAddress
       };
       var json = JSON.stringify(contactData);
+      var self = this;
       $.ajax({
         url: "http://localhost/prueba/soapUpdate.php",
         type: "POST",
@@ -2608,7 +2619,20 @@ __webpack_require__.r(__webpack_exports__);
           contact: json,
           contact_id: this.contactId
         },
-        dataType: "html"
+        dataType: "html",
+        success: function success() {
+          self.$parent.contacts[self.$parent.contactIndex].contact_name = self.updateContactName;
+          self.$parent.contacts[self.$parent.contactIndex].contact_email = self.updateContactEmail;
+          self.$parent.contacts[self.$parent.contactIndex].contact_phone = self.updateContactPhone;
+          self.$parent.contacts[self.$parent.contactIndex].contact_address = self.updateContactAddress;
+          self.$parent.contacts[self.$parent.contactIndex].contact_gender = self.updateContactGender;
+          self.$parent.contacts[self.$parent.contactIndex].contact_profile_picture = self.updateContactProfilePicture;
+          self.$parent.$parent.forceRerender();
+          $('#updateContactModal').modal('hide');
+        },
+        error: function error() {
+          console.log('Error.');
+        }
       });
     },
     onChangeFileUpload: function onChangeFileUpload() {
@@ -38970,7 +38994,7 @@ var render = function() {
         _vm._v(" "),
         _c("show-contact-modal-component", {
           attrs: {
-            "contact-id": _vm.contactId,
+            "contact-id": _vm.contactId.toString(),
             "contact-name": _vm.contactName,
             "contact-phone": _vm.contactPhone,
             "contact-email": _vm.contactEmail,
@@ -38983,7 +39007,7 @@ var render = function() {
         _c("update-contact-modal-component", {
           attrs: {
             "contact-index": _vm.contactIndex,
-            "contact-id": _vm.contactId,
+            "contact-id": _vm.contactId.toString(),
             "contact-name": _vm.contactName,
             "contact-phone": _vm.contactPhone,
             "contact-email": _vm.contactEmail,

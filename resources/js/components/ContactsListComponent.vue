@@ -1,7 +1,6 @@
 <template>
     <div class="row justify-content-center">
         <div class="col-md-12">
-            
             <div class="card table-responsive" v-show="contacts.length > 0">
                 <table class="table">
                     <thead>
@@ -43,8 +42,8 @@
             </div>
             <h2 v-show="filteredContacts.length == 0 && this.$parent.searchContact != '' " class="text-center">Búsqueda sin resultados :(</h2>
             <h2 v-show="contacts.length == 0 && this.$parent.searchContact == ''" class="text-center">No hay contactos registrados :(</h2>
-            <show-contact-modal-component :contact-id="contactId" :contact-name="contactName" :contact-phone="contactPhone" :contact-email="contactEmail" :contact-address="contactAddress" :contact-gender="contactGender" :contact-profile-picture="contactProfilePicture"></show-contact-modal-component>
-            <update-contact-modal-component :contact-index="contactIndex" :contact-id="contactId" :contact-name="contactName" :contact-phone="contactPhone" :contact-email="contactEmail" :contact-address="contactAddress" :contact-gender="contactGender" :contact-profile-picture="contactProfilePicture"></update-contact-modal-component>
+            <show-contact-modal-component :contact-id="contactId.toString()" :contact-name="contactName" :contact-phone="contactPhone" :contact-email="contactEmail" :contact-address="contactAddress" :contact-gender="contactGender" :contact-profile-picture="contactProfilePicture"></show-contact-modal-component>
+            <update-contact-modal-component :contact-index="contactIndex" :contact-id="contactId.toString()" :contact-name="contactName" :contact-phone="contactPhone" :contact-email="contactEmail" :contact-address="contactAddress" :contact-gender="contactGender" :contact-profile-picture="contactProfilePicture"></update-contact-modal-component>
             <delete-contact-modal-component :contact-id="contactId.toString()" :contact-index="contactIndex"></delete-contact-modal-component>
             <delete-contacts-modal-component :contacts-to-delete="contactsToDelete"></delete-contacts-modal-component>
         </div>
@@ -74,7 +73,7 @@
         data() {
             return {
                 contactIndex: null,
-                contactId: 0,
+                contactId: '',
                 contactName: '',
                 contactPhone: '',
                 contactEmail: '',

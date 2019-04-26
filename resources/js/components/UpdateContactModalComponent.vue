@@ -87,7 +87,7 @@
 
         props: {
             contactIndex: Number,
-            contactId: Number,
+            contactId: String,
             contactName: String,
             contactPhone: String,
             contactEmail: String,
@@ -183,12 +183,25 @@
                 };
 
                 var json=JSON.stringify(contactData);
-
+                var self=this;
                 $.ajax({
-                  url: "http://localhost/prueba/soapUpdate.php",
-                  type: "POST",
-                  data: {contact : json, contact_id: this.contactId},
-                  dataType: "html",
+                    url: "http://localhost/prueba/soapUpdate.php",
+                    type: "POST",
+                    data: {contact : json, contact_id: this.contactId},
+                    dataType: "html",
+                    success: function() {
+                        self.$parent.contacts[self.$parent.contactIndex].contact_name=self.updateContactName;
+                        self.$parent.contacts[self.$parent.contactIndex].contact_email=self.updateContactEmail;
+                        self.$parent.contacts[self.$parent.contactIndex].contact_phone=self.updateContactPhone;
+                        self.$parent.contacts[self.$parent.contactIndex].contact_address=self.updateContactAddress;
+                        self.$parent.contacts[self.$parent.contactIndex].contact_gender=self.updateContactGender;
+                        self.$parent.contacts[self.$parent.contactIndex].contact_profile_picture=self.updateContactProfilePicture;
+                        self.$parent.$parent.forceRerender();
+                        $('#updateContactModal').modal('hide');
+                    },
+                    error: function() {
+                        console.log('Error.');
+                    }
                 });             
             },
             

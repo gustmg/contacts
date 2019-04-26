@@ -38,22 +38,22 @@
 
         methods: {
             deleteContact: function() {
-                // axios.delete('http://localhost:8000/contacts/'+this.contactId, {contact_id: this.contactId})
-                // .then(function(res){
-                //     console.log(res);
-	    		// })
-	    		// .catch(function(err){
-	    		// 	console.log(err.response);
-	    		// });
-                // $('#deleteContactModal').modal('hide');
-                // this.$parent.$parent.contacts.splice(this.contactIndex, 1);
-                // this.$parent.$parent.forceRerender();
-
+                var self=this;
+                
                 $.ajax({
-                  url: "http://localhost/prueba/soapDelete.php",
-                  type: "POST",
-                  data: {contact_id: this.contactId},
-                  dataType: "html",
+                    url: "http://localhost/prueba/soapDelete.php",
+                    type: "POST",
+                    data: {contact_id: this.contactId},
+                    dataType: "html",
+                    success: function() {
+                        console.log('Eliminando indice: '+self.contactIndex);
+                        $('#deleteContactModal').modal('hide');
+                        self.$parent.$parent.contacts.splice(self.contactIndex, 1);
+                        self.$parent.$parent.forceRerender();
+                    },
+                    error: function() {
+                        console.log('Error.');
+                    }
                 });                   
             }
         }
