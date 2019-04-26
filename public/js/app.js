@@ -1787,6 +1787,7 @@ __webpack_require__.r(__webpack_exports__);
     contacts: {
       type: Array
     },
+    userId: Number,
     searchValue: String
   },
   data: function data() {
@@ -2019,16 +2020,24 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     deleteContact: function deleteContact() {
-      axios["delete"]('http://localhost:8000/contacts/' + this.contactId, {
-        contact_id: this.contactId
-      }).then(function (res) {
-        console.log(res);
-      })["catch"](function (err) {
-        console.log(err.response);
+      // axios.delete('http://localhost:8000/contacts/'+this.contactId, {contact_id: this.contactId})
+      // .then(function(res){
+      //     console.log(res);
+      // })
+      // .catch(function(err){
+      // 	console.log(err.response);
+      // });
+      // $('#deleteContactModal').modal('hide');
+      // this.$parent.$parent.contacts.splice(this.contactIndex, 1);
+      // this.$parent.$parent.forceRerender();
+      $.ajax({
+        url: "http://localhost/prueba/soapDelete.php",
+        type: "POST",
+        data: {
+          contact_id: this.contactId
+        },
+        dataType: "html"
       });
-      $('#deleteContactModal').modal('hide');
-      this.$parent.$parent.contacts.splice(this.contactIndex, 1);
-      this.$parent.$parent.forceRerender();
     }
   }
 });
@@ -2243,6 +2252,9 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     console.log('New contact modal component.');
   },
+  props: {
+    userId: Number
+  },
   data: function data() {
     return {
       csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -2292,21 +2304,10 @@ __webpack_require__.r(__webpack_exports__);
         "contact_phone": this.newContactPhone,
         "contact_gender": this.newContactGender,
         "contact_address": this.newContactAddress,
-        "contact_profile_picture": this.contactProfilePictureFile
+        "contact_profile_picture": this.contactProfilePictureFile,
+        "user_id": this.userId
       };
-      var json = JSON.stringify(contactData); // axios.post('http://localhost:8000/contacts', {json:json})
-      // .then((res)=>{
-      //     // newContact.contact_id = res.data.contact_id; 
-      //     // this.$parent.contacts.push(newContact);
-      //     // this.$parent.forceRerender();
-      //     // $('#newContactModal').modal('hide');
-      //     // this.resetForm();
-      //     console.log(res.data);
-      // })
-      // .catch(function(err){
-      //     console.log(err);
-      // });   
-
+      var json = JSON.stringify(contactData);
       $.ajax({
         url: "http://localhost/prueba/soap.php",
         type: "POST",
@@ -2569,26 +2570,46 @@ __webpack_require__.r(__webpack_exports__);
       this.$emit('contact-address', newInputValue);
     },
     updateContact: function updateContact() {
-      var formData = new FormData();
-      formData.append('_method', 'PUT');
-      formData.append('contact_profile_picture', this.file);
-      formData.append('contact_name', this.updateContactName);
-      formData.append('contact_email', this.updateContactEmail);
-      formData.append('contact_phone', this.updateContactPhone);
-      formData.append('contact_address', this.updateContactAddress);
-      formData.append('contact_gender', this.updateContactGender);
-      axios.post('http://localhost:8000/contacts/' + this.contactId, formData).then(function (res) {// console.log(res);
-      })["catch"](function (err) {
-        console.log(err.response);
+      // let formData = new FormData();
+      // formData.append('_method', 'PUT');
+      // formData.append('contact_profile_picture', this.file);
+      // formData.append('contact_name', this.updateContactName);
+      // formData.append('contact_email', this.updateContactEmail);
+      // formData.append('contact_phone', this.updateContactPhone);
+      // formData.append('contact_address', this.updateContactAddress);
+      // formData.append('contact_gender', this.updateContactGender);
+      // axios.post('http://localhost:8000/contacts/'+this.contactId, formData)
+      // .then(function(res){
+      // 	// console.log(res);
+      // })
+      // .catch(function(err){
+      // 	console.log(err.response);
+      // });
+      // this.$parent.contacts[this.$parent.contactIndex].contact_name=this.updateContactName;
+      // this.$parent.contacts[this.$parent.contactIndex].contact_email=this.updateContactEmail;
+      // this.$parent.contacts[this.$parent.contactIndex].contact_phone=this.updateContactPhone;
+      // this.$parent.contacts[this.$parent.contactIndex].contact_address=this.updateContactAddress;
+      // this.$parent.contacts[this.$parent.contactIndex].contact_gender=this.updateContactGender;
+      // this.$parent.contacts[this.$parent.contactIndex].contact_profile_picture=this.updateContactProfilePicture;
+      // this.$parent.$parent.forceRerender();
+      // $('#updateContactModal').modal('hide');
+      var contactData = {
+        "contact_name": this.updateContactName,
+        "contact_email": this.updateContactEmail,
+        "contact_phone": this.updateContactPhone,
+        "contact_gender": this.updateContactGender,
+        "contact_address": this.updateContactAddress
+      };
+      var json = JSON.stringify(contactData);
+      $.ajax({
+        url: "http://localhost/prueba/soapUpdate.php",
+        type: "POST",
+        data: {
+          contact: json,
+          contact_id: this.contactId
+        },
+        dataType: "html"
       });
-      this.$parent.contacts[this.$parent.contactIndex].contact_name = this.updateContactName;
-      this.$parent.contacts[this.$parent.contactIndex].contact_email = this.updateContactEmail;
-      this.$parent.contacts[this.$parent.contactIndex].contact_phone = this.updateContactPhone;
-      this.$parent.contacts[this.$parent.contactIndex].contact_address = this.updateContactAddress;
-      this.$parent.contacts[this.$parent.contactIndex].contact_gender = this.updateContactGender;
-      this.$parent.contacts[this.$parent.contactIndex].contact_profile_picture = this.updateContactProfilePicture;
-      this.$parent.$parent.forceRerender();
-      $('#updateContactModal').modal('hide');
     },
     onChangeFileUpload: function onChangeFileUpload() {
       this.file = this.$refs.file.files[0];
@@ -38664,7 +38685,7 @@ var render = function() {
       }),
       _c("br"),
       _vm._v(" "),
-      _c("new-contact-modal-component")
+      _c("new-contact-modal-component", { attrs: { "user-id": this.userId } })
     ],
     1
   )

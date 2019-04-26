@@ -38,16 +38,23 @@
 
         methods: {
             deleteContact: function() {
-                axios.delete('http://localhost:8000/contacts/'+this.contactId, {contact_id: this.contactId})
-                .then(function(res){
-                    console.log(res);
-	    		})
-	    		.catch(function(err){
-	    			console.log(err.response);
-	    		});
-                $('#deleteContactModal').modal('hide');
-                this.$parent.$parent.contacts.splice(this.contactIndex, 1);
-                this.$parent.$parent.forceRerender();
+                // axios.delete('http://localhost:8000/contacts/'+this.contactId, {contact_id: this.contactId})
+                // .then(function(res){
+                //     console.log(res);
+	    		// })
+	    		// .catch(function(err){
+	    		// 	console.log(err.response);
+	    		// });
+                // $('#deleteContactModal').modal('hide');
+                // this.$parent.$parent.contacts.splice(this.contactIndex, 1);
+                // this.$parent.$parent.forceRerender();
+
+                $.ajax({
+                  url: "http://localhost/prueba/soapDelete.php",
+                  type: "POST",
+                  data: {contact_id: this.contactId},
+                  dataType: "html",
+                });                   
             }
         }
     }

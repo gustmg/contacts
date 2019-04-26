@@ -14,7 +14,7 @@
             </div>
         </div>
         <contacts-list-component :contacts="contacts" :key="componentKey"></contacts-list-component><br>
-        <new-contact-modal-component></new-contact-modal-component>
+        <new-contact-modal-component :user-id="this.userId"></new-contact-modal-component>
     </div>
 </template>
 <script>
@@ -23,6 +23,7 @@
             contacts: {
                 type: Array
             },
+            userId: Number,
             searchValue:String,
         },
 

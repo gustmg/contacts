@@ -148,31 +148,48 @@
             },
             
             updateContact: function(){
-                let formData = new FormData();
-                formData.append('_method', 'PUT');
-                formData.append('contact_profile_picture', this.file);
-                formData.append('contact_name', this.updateContactName);
-                formData.append('contact_email', this.updateContactEmail);
-                formData.append('contact_phone', this.updateContactPhone);
-                formData.append('contact_address', this.updateContactAddress);
-                formData.append('contact_gender', this.updateContactGender);
+                // let formData = new FormData();
+                // formData.append('_method', 'PUT');
+                // formData.append('contact_profile_picture', this.file);
+                // formData.append('contact_name', this.updateContactName);
+                // formData.append('contact_email', this.updateContactEmail);
+                // formData.append('contact_phone', this.updateContactPhone);
+                // formData.append('contact_address', this.updateContactAddress);
+                // formData.append('contact_gender', this.updateContactGender);
 
-	    		axios.post('http://localhost:8000/contacts/'+this.contactId, formData)
-	    		.then(function(res){
-	    			// console.log(res);
-	    		})
-	    		.catch(function(err){
-	    			console.log(err.response);
-                });
+	    		// axios.post('http://localhost:8000/contacts/'+this.contactId, formData)
+	    		// .then(function(res){
+	    		// 	// console.log(res);
+	    		// })
+	    		// .catch(function(err){
+	    		// 	console.log(err.response);
+                // });
                 
-	    		this.$parent.contacts[this.$parent.contactIndex].contact_name=this.updateContactName;
-                this.$parent.contacts[this.$parent.contactIndex].contact_email=this.updateContactEmail;
-	    		this.$parent.contacts[this.$parent.contactIndex].contact_phone=this.updateContactPhone;
-                this.$parent.contacts[this.$parent.contactIndex].contact_address=this.updateContactAddress;
-                this.$parent.contacts[this.$parent.contactIndex].contact_gender=this.updateContactGender;
-                this.$parent.contacts[this.$parent.contactIndex].contact_profile_picture=this.updateContactProfilePicture;
-	    		this.$parent.$parent.forceRerender();
-	    		$('#updateContactModal').modal('hide');
+	    		// this.$parent.contacts[this.$parent.contactIndex].contact_name=this.updateContactName;
+                // this.$parent.contacts[this.$parent.contactIndex].contact_email=this.updateContactEmail;
+	    		// this.$parent.contacts[this.$parent.contactIndex].contact_phone=this.updateContactPhone;
+                // this.$parent.contacts[this.$parent.contactIndex].contact_address=this.updateContactAddress;
+                // this.$parent.contacts[this.$parent.contactIndex].contact_gender=this.updateContactGender;
+                // this.$parent.contacts[this.$parent.contactIndex].contact_profile_picture=this.updateContactProfilePicture;
+	    		// this.$parent.$parent.forceRerender();
+	    		// $('#updateContactModal').modal('hide');
+
+                var contactData = {
+                    "contact_name" : this.updateContactName,
+                    "contact_email" : this.updateContactEmail,
+                    "contact_phone" : this.updateContactPhone,
+                    "contact_gender" : this.updateContactGender,
+                    "contact_address" : this.updateContactAddress
+                };
+
+                var json=JSON.stringify(contactData);
+
+                $.ajax({
+                  url: "http://localhost/prueba/soapUpdate.php",
+                  type: "POST",
+                  data: {contact : json, contact_id: this.contactId},
+                  dataType: "html",
+                });             
             },
             
             onChangeFileUpload(){

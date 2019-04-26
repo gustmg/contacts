@@ -108,6 +108,10 @@
             console.log('New contact modal component.')
         },
 
+        props: {
+            userId: Number
+        },
+
         data(){
             return {
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -163,29 +167,17 @@
                     "contact_phone" : this.newContactPhone,
                     "contact_gender" : this.newContactGender,
                     "contact_address" : this.newContactAddress,
-                    "contact_profile_picture" : this.contactProfilePictureFile
+                    "contact_profile_picture" : this.contactProfilePictureFile,
+                    "user_id": this.userId
                 };
 
                 var json=JSON.stringify(contactData);
-
-                // axios.post('http://localhost:8000/contacts', {json:json})
-                // .then((res)=>{
-                //     // newContact.contact_id = res.data.contact_id; 
-                //     // this.$parent.contacts.push(newContact);
-                //     // this.$parent.forceRerender();
-                //     // $('#newContactModal').modal('hide');
-                //     // this.resetForm();
-                //     console.log(res.data);
-                // })
-                // .catch(function(err){
-                //     console.log(err);
-                // });   
 
                 $.ajax({
                   url: "http://localhost/prueba/soap.php",
                   type: "POST",
                   data: {contact : json},
-                  dataType: "html"
+                  dataType: "html",
                 });             
             },
 
