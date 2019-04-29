@@ -18,11 +18,11 @@
                 <form>
                     <div class="form-group">
                         <label for="userName">Nombre</label>
-                        <input v-model="updateUserName" v-on:blur="validateUserName" v-bind:class="{'is-valid': validUserName, 'is-invalid': invalidUserName}" type="text" class="form-control" id="userName" placeholder="Ingresa tu nombre..." required>
+                        <input v-model="updateUserName" v-on:blur="validateUserName" v-bind:class="{'is-valid': validUserName, 'is-invalid': invalidUserName}" type="text" class="form-control" id="userName" placeholder="Ingresa tu nombre..." maxlength="50" required>
                     </div>
                     <div class="form-group">
                         <label for="userEmail">Correo electrónico</label>
-                        <input v-model="updateUserEmail" v-on:blur="validateUserEmail" v-bind:class="{'is-valid': validUserEmail, 'is-invalid': invalidUserEmail}" type="email" class="form-control" id="userEmail" placeholder="Ingresa tu correo electrónico..." required>
+                        <input v-model="updateUserEmail" v-on:blur="validateUserEmail" v-bind:class="{'is-valid': validUserEmail, 'is-invalid': invalidUserEmail}" type="email" class="form-control" id="userEmail" placeholder="Ingresa tu correo electrónico..." maxlength="40" required>
                     </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Teléfono</label>

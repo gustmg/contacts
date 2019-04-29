@@ -28,13 +28,13 @@
                                 <div class="col-md-12">
                                     <div class="form-group text-left">
                                         <label for="contactName">Nombre *</label>
-                                        <input v-model="newContactName" v-on:blur="validateContactName" v-bind:class="{'is-valid': validContactName, 'is-invalid': invalidContactName}" name="contact_name" type="text" class="form-control" id="contactName" placeholder="Ingresar nombre..." required>
+                                        <input v-model="newContactName" v-on:blur="validateContactName" v-bind:class="{'is-valid': validContactName, 'is-invalid': invalidContactName}" name="contact_name" type="text" class="form-control" id="contactName" placeholder="Ingresar nombre..." maxlength="50" required>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group text-left">
                                         <label for="contactMail">E-mail *</label>
-                                        <input v-model="newContactEmail" v-on:blur="validateContactEmail" v-bind:class="{'is-valid': validContactEmail, 'is-invalid': invalidContactEmail}" name="contact_email" type="email" class="form-control" id="contactEmail" placeholder="Ingresar e-mail..." required>
+                                        <input v-model="newContactEmail" v-on:blur="validateContactEmail" v-bind:class="{'is-valid': validContactEmail, 'is-invalid': invalidContactEmail}" name="contact_email" type="email" class="form-control" id="contactEmail" placeholder="Ingresar e-mail..." maxlength="40" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">

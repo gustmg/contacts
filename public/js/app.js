@@ -1774,13 +1774,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     contacts: {
@@ -39693,6 +39686,7 @@ var render = function() {
                             type: "text",
                             id: "contactName",
                             placeholder: "Ingresar nombre...",
+                            maxlength: "50",
                             required: ""
                           },
                           domProps: { value: _vm.newContactName },
@@ -39734,6 +39728,7 @@ var render = function() {
                             type: "email",
                             id: "contactEmail",
                             placeholder: "Ingresar e-mail...",
+                            maxlength: "40",
                             required: ""
                           },
                           domProps: { value: _vm.newContactEmail },
@@ -40269,6 +40264,7 @@ var render = function() {
                           type: "text",
                           id: "updateContactName",
                           placeholder: "Ingresar nombre...",
+                          maxlength: "50",
                           required: ""
                         },
                         domProps: { value: _vm.updateContactName },
@@ -40310,6 +40306,7 @@ var render = function() {
                           type: "email",
                           id: "updateContactEmail",
                           placeholder: "Ingresar e-mail...",
+                          maxlength: "40",
                           required: ""
                         },
                         domProps: { value: _vm.updateContactEmail },
@@ -40604,6 +40601,7 @@ var render = function() {
                 type: "text",
                 id: "userName",
                 placeholder: "Ingresa tu nombre...",
+                maxlength: "50",
                 required: ""
               },
               domProps: { value: _vm.updateUserName },
@@ -40642,6 +40640,7 @@ var render = function() {
                 type: "email",
                 id: "userEmail",
                 placeholder: "Ingresa tu correo electrónico...",
+                maxlength: "40",
                 required: ""
               },
               domProps: { value: _vm.updateUserEmail },

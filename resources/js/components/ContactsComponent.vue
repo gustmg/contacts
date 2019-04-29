@@ -4,13 +4,6 @@
             <div class="col-md-6">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newContactModal">Agregar contacto</button>
             </div>
-            <!-- <div class="col-md-6">
-                <form>
-                    <div class="form-group">
-                        <input type="text" id="searchControlInput" placeholder="Buscar..." class="form-control">
-                    </div>
-                </form>
-            </div> -->
         </div>
         <contacts-list-component :contacts="contacts" :key="componentKey"></contacts-list-component><br>
         <new-contact-modal-component :user-id="this.userId"></new-contact-modal-component>
