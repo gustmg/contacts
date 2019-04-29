@@ -58,7 +58,7 @@
         methods: {
             getImageUrl: function(contact_id, contact_profile_picture) {
                 if(contact_profile_picture){
-                    return "storage/contacts/"+contact_id+".jpg";
+                    return "storage/contacts/"+contact_id+".png";
                 }
                 else{
                     return "img/profile_picture.png";

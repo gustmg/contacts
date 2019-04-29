@@ -49,6 +49,7 @@
         </div>
         <div v-if="totalCheckedInputs > 0" class="col-md-12" align="center"><br>
             <button type="button" class="btn btn-secondary" v-on:click="exportAsDoc">Exportar contactos seleccionados como DOC</button>
+            <button type="button" class="btn btn-secondary" v-on:click="exportAsPdf">Exportar contactos seleccionados como PDF</button>
             <button type="button" class="btn btn-secondary" v-on:click="exportAsExcel">Exportar contactos seleccionados como XLS</button>
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteContactsModal">Eiminar contactos seleccionados</button>
         </div>
@@ -117,7 +118,7 @@
 
             getImageUrl: function(contact_id, contact_profile_picture) {
                 if(contact_profile_picture){
-                    return "storage/contacts/"+contact_id+".jpg";
+                    return "storage/contacts/"+contact_id+".png";
                 }
                 else{
                     return "img/profile_picture.png";
@@ -167,7 +168,8 @@
             exportAsPdf: function() {
                 axios.post('http://localhost:8000/exports/', {format: 'pdf', contacts: this.contactsToDelete})
                 .then(function(res){
-                    window.location.href = res.data;
+                    // window.location.href = res.data;
+                    window.open(res.data, "_blank");
                 })
                 .catch(function(err){
                     console.log(err.response);

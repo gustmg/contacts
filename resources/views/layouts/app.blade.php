@@ -50,7 +50,7 @@
                         @else
                             <li class="nav-item">
                                 @if(Auth::user()->profile_picture)
-                                    <img src="storage/users/{{Auth::user()->id}}.jpg" width="38" height="38">
+                                    <img src="storage/users/{{Auth::user()->id}}.png" width="38" height="38">
                                 @else
                                     <img src="{{ asset('img/profile_picture.png') }}" width="38">
                                 @endif

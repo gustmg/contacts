@@ -28,19 +28,19 @@
                                 <div class="col-md-12">
                                     <div class="form-group text-left">
                                         <label for="contactName">Nombre *</label>
-                                        <input v-model="newContactName" name="contact_name" type="text" class="form-control" id="contactName" placeholder="Ingresar nombre..." required>
+                                        <input v-model="newContactName" v-on:blur="validateContactName" v-bind:class="{'is-valid': validContactName, 'is-invalid': invalidContactName}" name="contact_name" type="text" class="form-control" id="contactName" placeholder="Ingresar nombre..." required>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group text-left">
                                         <label for="contactMail">E-mail *</label>
-                                        <input v-model="newContactEmail" name="contact_email" type="email" class="form-control" id="contactEmail" placeholder="Ingresar e-mail..." required>
+                                        <input v-model="newContactEmail" v-on:blur="validateContactEmail" v-bind:class="{'is-valid': validContactEmail, 'is-invalid': invalidContactEmail}" name="contact_email" type="email" class="form-control" id="contactEmail" placeholder="Ingresar e-mail..." required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group text-left">
                                         <label for="contactPhone">Teléfono *</label>
-                                        <input v-model="newContactPhone" name="contact_phone" type="tel" class="form-control" id="contactPhone" placeholder="Ingresar teléfono..." required>
+                                        <input v-model="newContactPhone" v-on:blur="validateContactPhone" v-bind:class="{'is-valid': validContactPhone, 'is-invalid': invalidContactPhone}" name="contact_phone" type="tel" class="form-control" id="contactPhone" placeholder="Ingresar teléfono..." data-length="10" minlength="10" maxlength="10" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -64,7 +64,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button v-on:click="saveContact" type="submit" class="btn btn-primary">Guardar</button>
+                    <button v-on:click="saveContact" :disabled="validateForm"  type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </div>
         </div>
@@ -121,11 +121,30 @@
                 newContactGender:0,
                 newContactAddress:null,
                 newContactProfilePicture:0,
-                contactProfilePictureFile: null
+                contactProfilePictureFile: null,
+                validContactName: false,
+                invalidContactName: false,
+                validContactPhone: false,
+                invalidContactPhone: false,
+                validContactEmail: false,
+                invalidContactEmail: false
+            }
+        },
+
+        computed: {
+            validateForm: function() {
+                if(!this.validContactName || !this.validContactPhone || !this.validContactEmail){
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
         },
 
         methods: {
+            
+
             saveContact: function() {
                 var newContact = {
                     contact_id: 0,
@@ -194,6 +213,51 @@
                 $('#preview_contact_profile_picture').attr('src', 'img/profile_picture.png');
                 $('#newContactForm').get(0).reset();
                 //TODO: RESET newcontact object
+            },
+
+            validateContactName: function(e) {
+                if(!this.newContactName){
+                    this.validContactName = false;
+                    this.invalidContactName = true;
+                }
+                else{
+                    this.validContactName = true;
+                    this.invalidContactName = false;
+                }
+            },
+
+            validateContactPhone: function(e) {
+                const PHONE_REGEXP = /^[0-9]*$/gm;
+
+                if(this.newContactPhone ==null || this.newContactPhone.length == 0){
+                    this.validContactPhone = false;
+                    this.invalidContactPhone = true;
+                }
+                else if(!PHONE_REGEXP.test(this.newContactPhone) || this.newContactPhone.length < 10){
+                    this.validContactPhone = false;
+                    this.invalidContactPhone = true;
+                }
+                else{
+                    this.validContactPhone = true;
+                    this.invalidContactPhone = false;
+                }
+            },
+
+            validateContactEmail: function(e) {
+                const MAIL_REGEXP = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+                if(this.newContactEmail ==null || this.newContactEmail.length == 0){
+                    this.validContactEmail = false;
+                    this.invalidContactEmail = true;
+                }
+                else if(!MAIL_REGEXP.test(this.newContactEmail)){
+                    this.validContactEmail = false;
+                    this.invalidContactEmail = true;
+                }
+                else{
+                    this.validContactEmail = true;
+                    this.invalidContactEmail = false;
+                }
             }
         }
     }

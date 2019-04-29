@@ -3,7 +3,6 @@
         <div class="row">
             <div class="col-md-6">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newContactModal">Agregar contacto</button>
-                <button type="button" class="btn btn-success">Exportar agenda</button>
             </div>
             <div class="col-md-6">
                 <form>

@@ -31,19 +31,19 @@
                                 <div class="col-md-12">
                                     <div class="form-group text-left">
                                         <label for="updateContactName">Nombre *</label>
-                                        <input v-model="updateContactName" name="contact_name" type="text" class="form-control" id="updateContactName" placeholder="Ingresar nombre...">
+                                        <input v-model="updateContactName" v-on:blur="validateContactName" v-bind:class="{'is-valid': validContactName, 'is-invalid': invalidContactName}" name="contact_name" type="text" class="form-control" id="updateContactName" placeholder="Ingresar nombre..." required>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group text-left">
                                         <label for="updateContactMail">E-mail *</label>
-                                        <input v-model="updateContactEmail" name="contact_email" type="email" class="form-control" id="updateContactEmail" placeholder="Ingresar e-mail...">
+                                        <input v-model="updateContactEmail" v-on:blur="validateContactEmail" v-bind:class="{'is-valid': validContactEmail, 'is-invalid': invalidContactEmail}" name="contact_email" type="email" class="form-control" id="updateContactEmail" placeholder="Ingresar e-mail..." required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group text-left">
                                         <label for="updateContactPhone">Teléfono *</label>
-                                        <input v-model="updateContactPhone" name="contact_phone" type="tel" class="form-control" id="updateContactPhone" placeholder="Ingresar teléfono...">
+                                        <input v-model="updateContactPhone" v-on:blur="validateContactPhone" v-bind:class="{'is-valid': validContactPhone, 'is-invalid': invalidContactPhone}" name="contact_phone" type="tel" class="form-control" id="updateContactPhone" placeholder="Ingresar teléfono..." data-length="10" minlength="10" maxlength="10" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -67,7 +67,7 @@
                 </div>
                 <div class="modal-footer">                    
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button v-on:click="updateContact" type="button" class="btn btn-primary">Guardar</button>
+                    <button v-on:click="updateContact" :disabled="validateForm" type="button" class="btn btn-primary">Guardar</button>
                 </div>
             </div>
         </div>
@@ -105,7 +105,13 @@
                 updateContactGender:'',
                 updateContactAddress:'',
                 updateContactProfilePicture:0,
-                contactProfilePictureFile: null
+                contactProfilePictureFile: null,
+                validContactName: false,
+                invalidContactName: false,
+                validContactPhone: false,
+                invalidContactPhone: false,
+                validContactEmail: false,
+                invalidContactEmail: false
             }
         },
 
@@ -124,6 +130,20 @@
             },
             contactAddress(newVal) {
                 this.updateContactAddress = newVal;
+            },
+            contactProfilePicture(newVal) {
+                this.updateContactProfilePicture = newVal;
+            }
+        },
+
+        computed: {
+            validateForm: function() {
+                if(this.invalidContactName || this.invalidContactPhone || this.invalidContactEmail){
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
         },
 
@@ -162,21 +182,16 @@
 
                 var json=JSON.stringify(contactData);
                 var self=this;
+
+                // console.log(contactData);
                 $.ajax({
                     url: "http://localhost/prueba/soapUpdate.php",
                     type: "POST",
                     data: {contact : json},
                     dataType: "html",
                     success: function() {
-                        self.$parent.contacts[self.$parent.contactIndex].contact_name=self.updateContactName;
-                        self.$parent.contacts[self.$parent.contactIndex].contact_email=self.updateContactEmail;
-                        self.$parent.contacts[self.$parent.contactIndex].contact_phone=self.updateContactPhone;
-                        self.$parent.contacts[self.$parent.contactIndex].contact_address=self.updateContactAddress;
-                        self.$parent.contacts[self.$parent.contactIndex].contact_gender=self.updateContactGender;
-                        self.$parent.contacts[self.$parent.contactIndex].contact_profile_picture=self.updateContactProfilePicture;
-                        self.$parent.$parent.forceRerender();
-                        location.reload();
                         $('#updateContactModal').modal('hide');
+                        location.reload();
                     },
                     error: function() {
                         console.log('Error.');
@@ -212,10 +227,55 @@
 
             getImageUrl: function(contact_id, contact_profile_picture) {
                 if(contact_profile_picture){
-                    return "storage/contacts/"+contact_id+".jpg";
+                    return "storage/contacts/"+contact_id+".png";
                 }
                 else{
                     return "img/profile_picture.png";
+                }
+            },
+
+            validateContactName: function(e) {
+                if(!this.updateContactName){
+                    this.validContactName = false;
+                    this.invalidContactName = true;
+                }
+                else{
+                    this.validContactName = true;
+                    this.invalidContactName = false;
+                }
+            },
+
+            validateContactPhone: function(e) {
+                const PHONE_REGEXP = /^[0-9]*$/gm;
+
+                if(this.updateContactPhone ==null || this.updateContactPhone.length == 0){
+                    this.validContactPhone = false;
+                    this.invalidContactPhone = true;
+                }
+                else if(!PHONE_REGEXP.test(this.updateContactPhone) || this.updateContactPhone.length < 10){
+                    this.validContactPhone = false;
+                    this.invalidContactPhone = true;
+                }
+                else{
+                    this.validContactPhone = true;
+                    this.invalidContactPhone = false;
+                }
+            },
+
+            validateContactEmail: function(e) {
+                const MAIL_REGEXP = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+                if(this.updateContactEmail ==null || this.updateContactEmail.length == 0){
+                    this.validContactEmail = false;
+                    this.invalidContactEmail = true;
+                }
+                else if(!MAIL_REGEXP.test(this.updateContactEmail)){
+                    this.validContactEmail = false;
+                    this.invalidContactEmail = true;
+                }
+                else{
+                    this.validContactEmail = true;
+                    this.invalidContactEmail = false;
                 }
             }
         }

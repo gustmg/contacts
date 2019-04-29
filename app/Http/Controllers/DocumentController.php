@@ -7,6 +7,8 @@ use App\Contact;
 use Auth;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Fpdf;
+
 
 class DocumentController extends Controller
 {
@@ -41,12 +43,22 @@ class DocumentController extends Controller
         if($request->format == "doc"){
             $phpWord = new \PhpOffice\PhpWord\PhpWord();
             $section = $phpWord->addSection();
+            
             foreach($request->contacts as $contact_id){
                 $contact=Contact::find($contact_id);
-                $section->addImage("storage/contacts/".$contact_id.".jpg", array(
-                    'width'         => 100,
-                    'height'        => 100,
-                ));  
+                if($contact->contact_profile_picture){
+                    $section->addImage("storage/contacts/".$contact_id.".jpg", array(
+                        'width'         => 100,
+                        'height'        => 100,
+                    ));  
+                }
+                else{
+                    $section->addImage("storage/img/profile_picture.png", array(
+                        'width'         => 100,
+                        'height'        => 100,
+                    )); 
+                }
+                
                 $text = $section->addText("CONTACTO: ".$contact->contact_name);
                 $text = $section->addText("TELEFONO: ".$contact->contact_phone);
                 $text = $section->addText("EMAIL: ".$contact->contact_email);
@@ -59,21 +71,35 @@ class DocumentController extends Controller
             return "prueba.docx";
         }
         else if($request->format == "pdf"){
-            // $phpWord = new \PhpOffice\PhpWord\PhpWord();
-            // $section = $phpWord->addSection();
-            // foreach($request->contacts as $contact_id){
-            //     $contact=Contact::find($contact_id);
-            //     $text = $section->addText("CONTACTO: ".$contact->contact_name);
-            //     $text = $section->addText("TELEFONO: ".$contact->contact_phone);
-            //     $text = $section->addText("EMAIL: ".$contact->contact_email);
-            //     $text = $section->addText("SEXO: ".$contact->contact_gender);
-            //     $text = $section->addText("DIRECCION: ".$contact->contact_address);
-            // }
+            Fpdf::AddPage();
+            Fpdf::SetFont('Arial', 'B', 10);
+            
+            foreach($request->contacts as $key=>$contact_id){
+                $contact=Contact::find($contact_id);
+                if($contact->contact_profile_picture){
+                    Fpdf::Image("storage/contacts/".$contact_id.".png",10,10+(36*($key)),30,30);
+                }
+                else{
+                    Fpdf::Image("storage/img/profile_picture.png",10,10+(36*($key)),30,30);
+                }
+                Fpdf::Cell(40);
+                Fpdf::Cell(0, 6, 'Nombre: '.$contact->contact_name,0,1);
+                Fpdf::Cell(40);
+                Fpdf::Cell(0, 6, 'Email: '.$contact->contact_email,0,1);
+                Fpdf::Cell(40);
+                Fpdf::Cell(0, 6, 'Telefono: '.$contact->contact_phone,0,1);
+                Fpdf::Cell(40);
+                Fpdf::Cell(0, 6, 'Sexo: '.$contact->contact_gender,0,1);
+                Fpdf::Cell(40);
+                Fpdf::Cell(0, 6, 'Direccion: '.$contact->contact_address,0,1);
+                Fpdf::Ln();
+            }
 
-            // $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'PDF');
-            // $objWriter->save('prueba.pdf');
-            // return "prueba.pdf";
+            Fpdf::Output('F', "prueba.pdf");
+
+            return "prueba.pdf";
         }
+
         else if($request->format == "xls"){
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(35);
@@ -101,18 +127,34 @@ class DocumentController extends Controller
                 $sheet->setCellValueByColumnAndRow(4, $key+2, $contact->contact_gender);
                 $sheet->setCellValueByColumnAndRow(5, $key+2, $contact->contact_address);
 
-                $objDrawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
-                $objDrawing->setName('test_img');
-                $objDrawing->setDescription('test_img');
-                $objDrawing->setPath("storage/contacts/".$contact_id.".jpg");
-                $objDrawing->setCoordinates('F'.($key+2));                      
-                //setOffsetX works properly
-                $objDrawing->setOffsetX(5); 
-                $objDrawing->setOffsetY(5);                
-                //set width, height
-                $objDrawing->setWidth(100); 
-                $objDrawing->setHeight(100); 
-                $objDrawing->setWorksheet($spreadsheet->getActiveSheet());
+                if($contact->contact_profile_picture){
+                    $objDrawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+                    $objDrawing->setName('test_img');
+                    $objDrawing->setDescription('test_img');
+                    $objDrawing->setPath("storage/contacts/".$contact_id.".jpg");
+                    $objDrawing->setCoordinates('F'.($key+2));                      
+                    //setOffsetX works properly
+                    $objDrawing->setOffsetX(5); 
+                    $objDrawing->setOffsetY(5);                
+                    //set width, height
+                    $objDrawing->setWidth(100); 
+                    $objDrawing->setHeight(100); 
+                    $objDrawing->setWorksheet($spreadsheet->getActiveSheet());
+                }
+                else{
+                    $objDrawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+                    $objDrawing->setName('test_img');
+                    $objDrawing->setDescription('test_img');
+                    $objDrawing->setPath("storage/img/profile_picture.png");
+                    $objDrawing->setCoordinates('F'.($key+2));                      
+                    //setOffsetX works properly
+                    $objDrawing->setOffsetX(5); 
+                    $objDrawing->setOffsetY(5);                
+                    //set width, height
+                    $objDrawing->setWidth(100); 
+                    $objDrawing->setHeight(100); 
+                    $objDrawing->setWorksheet($spreadsheet->getActiveSheet());
+                }
             }
 
             $writer = new Xlsx($spreadsheet);

@@ -18,15 +18,15 @@
                 <form>
                     <div class="form-group">
                         <label for="userName">Nombre</label>
-                        <input v-model="updateUserName" type="text" class="form-control" id="userName" placeholder="Ingresa tu nombre...">
+                        <input v-model="updateUserName" v-on:blur="validateUserName" v-bind:class="{'is-valid': validUserName, 'is-invalid': invalidUserName}" type="text" class="form-control" id="userName" placeholder="Ingresa tu nombre..." required>
                     </div>
                     <div class="form-group">
                         <label for="userEmail">Correo electrónico</label>
-                        <input v-model="updateUserEmail" type="email" class="form-control" id="userEmail" placeholder="Ingresa tu correo electrónico...">
+                        <input v-model="updateUserEmail" v-on:blur="validateUserEmail" v-bind:class="{'is-valid': validUserEmail, 'is-invalid': invalidUserEmail}" type="email" class="form-control" id="userEmail" placeholder="Ingresa tu correo electrónico..." required>
                     </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Teléfono</label>
-                        <input v-model="updateUserPhone" type="tel" class="form-control" id="exampleInputEmail1" placeholder="Ingresa tu número telefónico...">
+                        <input v-model="updateUserPhone" v-on:blur="validateUserPhone" v-bind:class="{'is-valid': validUserPhone, 'is-invalid': invalidUserPhone}" type="tel" class="form-control" id="exampleInputEmail1" placeholder="Ingresa tu número telefónico..." data-length="10" minlength="10" maxlength="10" required>
                     </div>
                     <div class="form-group">
                         <label for="userGender">Sexo</label>
@@ -40,7 +40,7 @@
                         <input v-model="updateUserAddress" type="text" class="form-control" id="userAddress" placeholder="Ingresa tu dirección...">
                     </div>
                 </form>
-                <button v-on:click="updateUser" type="button" class="btn btn-primary">Guardar cambios</button>
+                <button v-on:click="updateUser" :disabled="validateForm" type="button" class="btn btn-primary">Guardar cambios</button>
             </div>
         </div>
     </div>
@@ -72,13 +72,29 @@
                 updateUserGender:this.users[0].gender,
                 updateUserAddress:this.users[0].address,
                 updateUserProfilePicture:this.users[0].profile_picture,
-                userProfilePictureFile: null
+                userProfilePictureFile: null,
+                validUserName: false,
+                invalidUserName: false,
+                validUserPhone: false,
+                invalidUserPhone: false,
+                validUserEmail: false,
+                invalidUserEmail: false
+            }
+        },
+
+        computed: {
+            validateForm: function() {
+                if(this.invalidUserName || this.invalidUserPhone || this.invalidUserEmail){
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
         },
 
         methods: {            
             updateUser: function(){
-                this.onChangeFileUpload();
                 var userData = {
                     "user_id" : this.users[0].id,
                     "user_name" : this.updateUserName,
@@ -137,10 +153,55 @@
 
             getImageUrl: function(user_id, user_profile_picture) {
                 if(user_profile_picture){
-                    return "storage/users/"+user_id+".jpg";
+                    return "storage/users/"+user_id+".png";
                 }
                 else{
                     return "img/profile_picture.png";
+                }
+            },
+
+            validateUserName: function(e) {
+                if(!this.updateUserName){
+                    this.validUserName = false;
+                    this.invalidUserName = true;
+                }
+                else{
+                    this.validUserName = true;
+                    this.invalidUserName = false;
+                }
+            },
+
+            validateUserPhone: function(e) {
+                const PHONE_REGEXP = /^[0-9]*$/gm;
+
+                if(this.updateUserPhone ==null || this.updateUserPhone.length == 0){
+                    this.validUserPhone = false;
+                    this.invalidUserPhone = true;
+                }
+                else if(!PHONE_REGEXP.test(this.updateUserPhone) || this.updateUserPhone.length < 10){
+                    this.validUserPhone = false;
+                    this.invalidUserPhone = true;
+                }
+                else{
+                    this.validUserPhone = true;
+                    this.invalidUserPhone = false;
+                }
+            },
+
+            validateUserEmail: function(e) {
+                const MAIL_REGEXP = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+                if(this.updateUserEmail ==null || this.updateUserEmail.length == 0){
+                    this.validUserEmail = false;
+                    this.invalidUserEmail = true;
+                }
+                else if(!MAIL_REGEXP.test(this.updateUserEmail)){
+                    this.validUserEmail = false;
+                    this.invalidUserEmail = true;
+                }
+                else{
+                    this.validUserEmail = true;
+                    this.invalidUserEmail = false;
                 }
             }
         }
