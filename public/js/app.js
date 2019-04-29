@@ -39053,21 +39053,6 @@ var staticRenderFns = [
           },
           [_vm._v("Agregar contacto")]
         )
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-md-6" }, [
-        _c("form", [
-          _c("div", { staticClass: "form-group" }, [
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                id: "searchControlInput",
-                placeholder: "Buscar..."
-              }
-            })
-          ])
-        ])
       ])
     ])
   }
