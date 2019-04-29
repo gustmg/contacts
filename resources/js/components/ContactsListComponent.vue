@@ -42,13 +42,14 @@
             </div>
             <h2 v-show="filteredContacts.length == 0 && this.$parent.searchContact != '' " class="text-center">Búsqueda sin resultados :(</h2>
             <h2 v-show="contacts.length == 0 && this.$parent.searchContact == ''" class="text-center">No hay contactos registrados :(</h2>
-            <show-contact-modal-component :contact-id="contactId.toString()" :contact-name="contactName" :contact-phone="contactPhone" :contact-email="contactEmail" :contact-address="contactAddress" :contact-gender="contactGender" :contact-profile-picture="contactProfilePicture"></show-contact-modal-component>
-            <update-contact-modal-component :contact-index="contactIndex" :contact-id="contactId.toString()" :contact-name="contactName" :contact-phone="contactPhone" :contact-email="contactEmail" :contact-address="contactAddress" :contact-gender="contactGender" :contact-profile-picture="contactProfilePicture"></update-contact-modal-component>
+            <show-contact-modal-component :contact-id="contactId.toString()" :contact-name="contactName" :contact-phone="contactPhone" :contact-email="contactEmail" :contact-address="contactAddress" :contact-gender="contactGender.toString()" :contact-profile-picture="contactProfilePicture"></show-contact-modal-component>
+            <update-contact-modal-component :contact-index="contactIndex" :contact-id="contactId.toString()" :contact-name="contactName" :contact-phone="contactPhone" :contact-email="contactEmail" :contact-address="contactAddress" :contact-gender="contactGender.toString()" :contact-profile-picture="contactProfilePicture"></update-contact-modal-component>
             <delete-contact-modal-component :contact-id="contactId.toString()" :contact-index="contactIndex"></delete-contact-modal-component>
             <delete-contacts-modal-component :contacts-to-delete="contactsToDelete"></delete-contacts-modal-component>
         </div>
         <div v-if="totalCheckedInputs > 0" class="col-md-12" align="center"><br>
-            <button type="button" class="btn btn-secondary">Exportar contactos seleccionados</button>
+            <button type="button" class="btn btn-secondary" v-on:click="exportAsDoc">Exportar contactos seleccionados como DOC</button>
+            <button type="button" class="btn btn-secondary" v-on:click="exportAsExcel">Exportar contactos seleccionados como XLS</button>
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteContactsModal">Eiminar contactos seleccionados</button>
         </div>
     </div>
@@ -78,7 +79,7 @@
                 contactPhone: '',
                 contactEmail: '',
                 contactAddress: '',
-                contactGender: 0,
+                contactGender: '',
                 contactProfilePicture: 0,
                 totalCheckedInputs: 0,
                 contactsToDelete: []
@@ -150,7 +151,40 @@
                     this.contactsToDelete.push(contact_id);
                 }                
                 this.totalCheckedInputs = $('.check:checked').length;
-            }
+            },
+
+            exportAsDoc: function() {
+                axios.post('http://localhost:8000/exports/', {format: 'doc', contacts: this.contactsToDelete})
+                .then(function(res){
+                    window.location.href = res.data;
+                })
+                .catch(function(err){
+                    console.log(err.response);
+                });
+                
+            },
+
+            exportAsPdf: function() {
+                axios.post('http://localhost:8000/exports/', {format: 'pdf', contacts: this.contactsToDelete})
+                .then(function(res){
+                    window.location.href = res.data;
+                })
+                .catch(function(err){
+                    console.log(err.response);
+                });
+
+            },
+
+            exportAsExcel: function() {
+                axios.post('http://localhost:8000/exports/', {format: 'xls', contacts: this.contactsToDelete})
+                .then(function(res){
+                    window.location.href = res.data;
+                })
+                .catch(function(err){
+                    console.log(err.response);
+                });
+
+            },
         },
 
         computed: {

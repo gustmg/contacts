@@ -9,7 +9,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="newContactForm" method="POST" action="/contacts">
+                    <form id="newContactForm" method="POST" action="/contacts" data-toggle="validator">
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-md-12">
@@ -64,7 +64,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button v-on:click="saveContact" type="button" class="btn btn-primary">Guardar</button>
+                    <button v-on:click="saveContact" type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </div>
         </div>
@@ -137,36 +137,13 @@
                     contact_profile_picture: this.newContactProfilePicture
                 };
 
-
-                // // Sending data via axios
-                // let formData = new FormData();
-                // formData.append('contact_profile_picture', this.file);
-                // formData.append('contact_name', this.newContactName);
-                // formData.append('contact_email', this.newContactEmail);
-                // formData.append('contact_phone', this.newContactPhone);
-                // formData.append('contact_gender', this.newContactGender);
-                // formData.append('contact_address', this.newContactAddress);
-
-                // axios.post('http://localhost:8000/contacts', formData)
-                // .then((res)=>{
-                //     newContact.contact_id = res.data.contact_id; 
-                //     this.$parent.contacts.push(newContact);
-                //     this.$parent.forceRerender();
-                //     $('#newContactModal').modal('hide');
-                //     this.resetForm();
-                // })
-                // .catch(function(err){
-                //     console.log(err);
-                // });
-
-                //Sending data via json
-
                 var contactData = {
                     "contact_name" : this.newContactName,
                     "contact_email" : this.newContactEmail,
                     "contact_phone" : this.newContactPhone,
                     "contact_gender" : this.newContactGender,
                     "contact_address" : this.newContactAddress,
+                    "has_contact_profile_picture" : this.newContactProfilePicture,
                     "contact_profile_picture" : this.contactProfilePictureFile,
                     "user_id": this.userId
                 };

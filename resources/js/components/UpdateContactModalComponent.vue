@@ -91,7 +91,7 @@
             contactName: String,
             contactPhone: String,
             contactEmail: String,
-            contactGender: Number,
+            contactGender: String,
             contactAddress: String,
             contactProfilePicture: Number
         },
@@ -102,9 +102,10 @@
                 updateContactName:'',
                 updateContactPhone:'',
                 updateContactEmail:'',
-                updateContactGender:0,
+                updateContactGender:'',
                 updateContactAddress:'',
-                updateContactProfilePicture:0
+                updateContactProfilePicture:0,
+                contactProfilePictureFile: null
             }
         },
 
@@ -148,38 +149,15 @@
             },
             
             updateContact: function(){
-                // let formData = new FormData();
-                // formData.append('_method', 'PUT');
-                // formData.append('contact_profile_picture', this.file);
-                // formData.append('contact_name', this.updateContactName);
-                // formData.append('contact_email', this.updateContactEmail);
-                // formData.append('contact_phone', this.updateContactPhone);
-                // formData.append('contact_address', this.updateContactAddress);
-                // formData.append('contact_gender', this.updateContactGender);
-
-	    		// axios.post('http://localhost:8000/contacts/'+this.contactId, formData)
-	    		// .then(function(res){
-	    		// 	// console.log(res);
-	    		// })
-	    		// .catch(function(err){
-	    		// 	console.log(err.response);
-                // });
-                
-	    		// this.$parent.contacts[this.$parent.contactIndex].contact_name=this.updateContactName;
-                // this.$parent.contacts[this.$parent.contactIndex].contact_email=this.updateContactEmail;
-	    		// this.$parent.contacts[this.$parent.contactIndex].contact_phone=this.updateContactPhone;
-                // this.$parent.contacts[this.$parent.contactIndex].contact_address=this.updateContactAddress;
-                // this.$parent.contacts[this.$parent.contactIndex].contact_gender=this.updateContactGender;
-                // this.$parent.contacts[this.$parent.contactIndex].contact_profile_picture=this.updateContactProfilePicture;
-	    		// this.$parent.$parent.forceRerender();
-	    		// $('#updateContactModal').modal('hide');
-
                 var contactData = {
+                    "contact_id" : this.contactId,
                     "contact_name" : this.updateContactName,
                     "contact_email" : this.updateContactEmail,
                     "contact_phone" : this.updateContactPhone,
                     "contact_gender" : this.updateContactGender,
-                    "contact_address" : this.updateContactAddress
+                    "contact_address" : this.updateContactAddress,
+                    "has_contact_profile_picture" : this.updateContactProfilePicture,
+                    "contact_profile_picture" : this.contactProfilePictureFile
                 };
 
                 var json=JSON.stringify(contactData);
@@ -187,7 +165,7 @@
                 $.ajax({
                     url: "http://localhost/prueba/soapUpdate.php",
                     type: "POST",
-                    data: {contact : json, contact_id: this.contactId},
+                    data: {contact : json},
                     dataType: "html",
                     success: function() {
                         self.$parent.contacts[self.$parent.contactIndex].contact_name=self.updateContactName;
@@ -197,6 +175,7 @@
                         self.$parent.contacts[self.$parent.contactIndex].contact_gender=self.updateContactGender;
                         self.$parent.contacts[self.$parent.contactIndex].contact_profile_picture=self.updateContactProfilePicture;
                         self.$parent.$parent.forceRerender();
+                        location.reload();
                         $('#updateContactModal').modal('hide');
                     },
                     error: function() {
@@ -210,13 +189,20 @@
                 if(this.file){
                     this.updateContactProfilePicture=1;
                     var reader = new FileReader();
+                    var self=this;
 
                     reader.onload = function(e) {
                         $('#update_preview_contact_profile_picture').attr('src', e.target.result);
+                        self.setImageFile(reader.result);//Necesary for json request
                     }
 
                     reader. readAsDataURL(this.file);
                 }
+            },
+
+            setImageFile: function(reader_result) {
+                this.contactProfilePictureFile = reader_result;
+                // console.log(this.contactProfilePictureFile);
             },
 
             removeProfilePicture: function() {

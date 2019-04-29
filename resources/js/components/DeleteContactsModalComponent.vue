@@ -36,7 +36,7 @@
                 this.contactsToDelete.forEach(function(contact_id) {
                     axios.delete('http://localhost:8000/contacts/'+contact_id, {contact_id: contact_id})
                     .then(function(res){
-                        console.log(res);
+                        location.reload();
                     })
                     .catch(function(err){
                         console.log(err.response);

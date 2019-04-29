@@ -39,14 +39,19 @@
         methods: {
             deleteContact: function() {
                 var self=this;
+
+                var contactData = {
+                    "contact_id" : this.contactId
+                };
+
+                var json=JSON.stringify(contactData);
                 
                 $.ajax({
                     url: "http://localhost/prueba/soapDelete.php",
                     type: "POST",
-                    data: {contact_id: this.contactId},
+                    data: {contact: json},
                     dataType: "html",
                     success: function() {
-                        console.log('Eliminando indice: '+self.contactIndex);
                         $('#deleteContactModal').modal('hide');
                         self.$parent.$parent.contacts.splice(self.contactIndex, 1);
                         self.$parent.$parent.forceRerender();

@@ -51,7 +51,7 @@
             contactEmail: String,
             contactPhone: String,
             contactAddress: String,
-            contactGender: Number,
+            contactGender: String,
             contactProfilePicture: Number
         },
 
