@@ -47,7 +47,7 @@ class DocumentController extends Controller
             foreach($request->contacts as $contact_id){
                 $contact=Contact::find($contact_id);
                 if($contact->contact_profile_picture){
-                    $section->addImage("storage/contacts/".$contact_id.".jpg", array(
+                    $section->addImage("storage/contacts/".$contact_id.".png", array(
                         'width'         => 100,
                         'height'        => 100,
                     ));  
@@ -62,7 +62,12 @@ class DocumentController extends Controller
                 $text = $section->addText("CONTACTO: ".$contact->contact_name);
                 $text = $section->addText("TELEFONO: ".$contact->contact_phone);
                 $text = $section->addText("EMAIL: ".$contact->contact_email);
-                $text = $section->addText("SEXO: ".$contact->contact_gender);
+                if($contact->contact_gender==0){
+                    $text = $section->addText("SEXO: Masculino");
+                }
+                else{
+                    $text = $section->addText("SEXO: Femenino");
+                }
                 $text = $section->addText("DIRECCION: ".$contact->contact_address);
             }
 
@@ -89,7 +94,13 @@ class DocumentController extends Controller
                 Fpdf::Cell(40);
                 Fpdf::Cell(0, 6, 'Telefono: '.$contact->contact_phone,0,1);
                 Fpdf::Cell(40);
-                Fpdf::Cell(0, 6, 'Sexo: '.$contact->contact_gender,0,1);
+                if($contact->contact_gender==0){
+                    Fpdf::Cell(0, 6, 'Sexo: Masculino',0,1);
+                }
+                else{
+                    Fpdf::Cell(0, 6, 'Sexo: Femenino',0,1);
+                }
+                
                 Fpdf::Cell(40);
                 Fpdf::Cell(0, 6, 'Direccion: '.$contact->contact_address,0,1);
                 Fpdf::Ln();
@@ -124,14 +135,19 @@ class DocumentController extends Controller
                 $sheet->setCellValueByColumnAndRow(1, $key+2, $contact->contact_name);
                 $sheet->setCellValueByColumnAndRow(2, $key+2, $contact->contact_phone);
                 $sheet->setCellValueByColumnAndRow(3, $key+2, $contact->contact_email);
-                $sheet->setCellValueByColumnAndRow(4, $key+2, $contact->contact_gender);
+                if($contact->contact_gender==0){
+                    $sheet->setCellValueByColumnAndRow(4, $key+2, "Masculino");
+                }
+                else{
+                    $sheet->setCellValueByColumnAndRow(4, $key+2, "Femenino");
+                }
                 $sheet->setCellValueByColumnAndRow(5, $key+2, $contact->contact_address);
 
                 if($contact->contact_profile_picture){
                     $objDrawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
                     $objDrawing->setName('test_img');
                     $objDrawing->setDescription('test_img');
-                    $objDrawing->setPath("storage/contacts/".$contact_id.".jpg");
+                    $objDrawing->setPath("storage/contacts/".$contact_id.".png");
                     $objDrawing->setCoordinates('F'.($key+2));                      
                     //setOffsetX works properly
                     $objDrawing->setOffsetX(5); 

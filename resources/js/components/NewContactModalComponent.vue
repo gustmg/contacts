@@ -212,7 +212,19 @@
             resetForm: function() {
                 $('#preview_contact_profile_picture').attr('src', 'img/profile_picture.png');
                 $('#newContactForm').get(0).reset();
-                //TODO: RESET newcontact object
+                this.newContactName=null,
+                this.newContactEmail=null,
+                this.newContactPhone=null,
+                this.newContactGender=0,
+                this.newContactAddress=null,
+                this.newContactProfilePicture=0,
+                this.contactProfilePictureFile= null,
+                this.validContactName= false,
+                this.invalidContactName= false,
+                this.validContactPhone= false,
+                this.invalidContactPhone= false,
+                this.validContactEmail= false,
+                this.invalidContactEmail= false
             },
 
             validateContactName: function(e) {
